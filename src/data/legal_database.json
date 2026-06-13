@@ -1,0 +1,163 @@
+
+[
+  {
+    "id": "12_KAP_1_PAR_1_ST",
+    "lagrum": "JB 12:1",
+    "kategori": "Allmänt",
+    "typ": "informativ",
+    "beskrivning": "Definierar att kapitlet avser avtal om hyra av hus eller del av hus mot ersättning.",
+    "villkor": [],
+    "regel": {},
+    "klausul_text": "Detta avtal regleras av bestämmelserna i 12 kap. Jordabalken (Hyreslagen)."
+  },
+  {
+    "id": "12_KAP_1_PAR_4_ST",
+    "lagrum": "JB 12:1",
+    "kategori": "Definitioner",
+    "typ": "informativ",
+    "beskrivning": "Definierar 'bostadslägenhet' som en lägenhet som upplåtits för att helt eller till en inte oväsentlig del användas som bostad, och 'lokal' som annan lägenhet.",
+    "villkor": [],
+    "regel": {},
+    "klausul_text": "Med bostadslägenhet avses i detta avtal en lägenhet som huvudsakligen används som bostad. Med lokal avses annan lägenhet."
+  },
+  {
+    "id": "12_KAP_1_PAR_6_ST",
+    "lagrum": "JB 12:1",
+    "kategori": "Allmänt",
+    "typ": "tvingande",
+    "beskrivning": "Anger att förbehåll som strider mot en bestämmelse i detta kapitel är utan verkan mot hyresgästen, om ej annat anges (tvingande till hyresgästens fördel).",
+    "villkor": [],
+    "regel": {
+      "parameter": "avtalsfrihet",
+      "värde": "begränsad_till_hyresgästens_förmån"
+    },
+    "klausul_text": "Avtalsvillkor som är mindre förmånliga för hyresgästen än bestämmelserna i 12 kap. Jordabalken är utan verkan."
+  },
+  {
+    "id": "12_KAP_2_PAR_1_ST",
+    "lagrum": "JB 12:2",
+    "kategori": "Avtalsform",
+    "typ": "dispositiv",
+    "beskrivning": "Hyresavtal ska upprättas skriftligen om någon av parterna begär det.",
+    "villkor": [
+      {
+        "parameter": "begäran_om_skriftligt_avtal",
+        "operator": "eq",
+        "värde": true
+      }
+    ],
+    "regel": {
+      "parameter": "avtalsform",
+      "värde": "skriftlig"
+    },
+    "klausul_text": "Detta hyresavtal har upprättats skriftligen. Ändringar och tillägg till detta avtal ska vara skriftliga för att vara gällande."
+  },
+  {
+    "id": "12_KAP_3_PAR_1_ST_1",
+    "lagrum": "JB 12:3",
+    "kategori": "Hyrestid och Uppsägning",
+    "typ": "dispositiv",
+    "beskrivning": "Ett hyresavtal för bestämd tid upphör att gälla vid hyrestidens utgång, om inte annat har avtalats.",
+    "villkor": [
+      {
+        "parameter": "avtalstyp",
+        "operator": "eq",
+        "värde": "bestämd_tid"
+      },
+      {
+        "parameter": "hyresförhållande_månader",
+        "operator": "lte",
+        "värde": 9
+      }
+    ],
+    "regel": {
+      "parameter": "avtalets_upphörande",
+      "värde": "automatisk_vid_hyrestidens_slut"
+    },
+    "klausul_text": "Hyresavtalet gäller för bestämd tid och upphör att gälla vid hyrestidens utgång utan föregående uppsägning."
+  },
+  {
+    "id": "12_KAP_3_PAR_1_ST_2",
+    "lagrum": "JB 12:3",
+    "kategori": "Hyrestid och Uppsägning",
+    "typ": "tvingande",
+    "beskrivning": "Om hyresförhållandet för ett avtal på bestämd tid har varat mer än nio månader i följd, måste avtalet alltid sägas upp för att upphöra att gälla.",
+    "villkor": [
+      {
+        "parameter": "avtalstyp",
+        "operator": "eq",
+        "värde": "bestämd_tid"
+      },
+      {
+        "parameter": "hyresförhållande_månader",
+        "operator": "gt",
+        "värde": 9
+      }
+    ],
+    "regel": {
+      "parameter": "uppsägning_krävs",
+      "värde": true
+    },
+    "klausul_text": "Eftersom hyresförhållandet avses pågå längre än nio månader, måste avtalet sägas upp för att upphöra att gälla vid hyrestidens utgång."
+  },
+  {
+    "id": "12_KAP_3_PAR_2_ST_1",
+    "lagrum": "JB 12:3",
+    "kategori": "Hyrestid och Uppsägning",
+    "typ": "dispositiv",
+    "beskrivning": "Ett hyresavtal på obestämd tid för en bostadslägenhet kan sägas upp med tre månaders uppsägningstid, om inte längre avtalats.",
+    "villkor": [
+      {
+        "parameter": "avtalstyp",
+        "operator": "eq",
+        "värde": "obestämd_tid"
+      },
+      {
+        "parameter": "lägenhetstyp",
+        "operator": "eq",
+        "värde": "bostadslägenhet"
+      }
+    ],
+    "regel": {
+      "parameter": "uppsägningstid_månader",
+      "värde": 3,
+      "villkor": "om_ej_längre_avtalats"
+    },
+    "klausul_text": "Detta avtal gäller tills vidare. Uppsägningstiden från hyresgästens sida är tre månader. Från hyresvärdens sida gäller den uppsägningstid som anges i lag."
+  },
+  {
+    "id": "12_KAP_4_PAR_1_ST",
+    "lagrum": "JB 12:4",
+    "kategori": "Hyrestid och Uppsägning",
+    "typ": "dispositiv",
+    "beskrivning": "Hyresavtal för obestämd tid kan sägas upp att gälla vid månadsskiftet 3 månader efter för bostad och 9 för lokal.",
+    "villkor": [
+      {
+        "parameter": "avtalstyp",
+        "operator": "eq",
+        "värde": "obestämd_tid"
+      }
+    ],
+    "regel": {
+      "parameter": "uppsägningstid_månader",
+      "värde": {
+        "bostadslägenhet": 3,
+        "lokal": 9
+      }
+    },
+    "klausul_text": "Avtalet löper tills vidare med en ömsesidig uppsägningstid av tre (3) månader för bostadslägenhet, och nio (9) månader för lokal, till det månadsskifte som inträffar närmast efter uppsägningstidens utgång."
+  },
+  {
+    "id": "12_KAP_24_PAR_1_ST_VARDPLIKT",
+    "lagrum": "JB 12:24",
+    "kategori": "Hyresgästens Vårdplikt",
+    "typ": "tvingande",
+    "beskrivning": "Hyresgästen skall under hyrestiden väl vårda lägenheten och vad som hör därtill. Han är skyldig att ersätta all skada som uppkommer genom hans vållande eller genom vårdslöshet eller försummelse av någon som hör till hans hushåll eller gästar honom eller av annan som han inrymt i lägenheten eller som där utför arbete för hans räkning.",
+    "villkor": [],
+    "regel": {
+      "parameter": "vårdplikt",
+      "värde": true
+    },
+    "klausul_text": "Hyresgästen ska under hyrestiden väl vårda lägenheten och dess tillhörigheter. Hyresgästen är skyldig att ersätta all skada som uppkommer genom eget vållande, eller genom vårdslöshet av hushållsmedlemmar, gäster eller annan som beretts tillträde till lägenheten."
+  }
+]
