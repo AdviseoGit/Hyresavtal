@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { SITE, siteValue } from "../../data/site";
+
 export const metadata = {
   title: "Användarvillkor & Ansvarsfriskrivning – Hyresavtal.nu",
   description:
@@ -32,8 +34,9 @@ export default function Villkor() {
         <H>1. Vad Tjänsten är – och inte är</H>
         <p>
           Tjänsten är ett digitalt verktyg som hjälper dig att snabbt ta fram ett{" "}
-          <strong>utkast till hyresavtal</strong> för bostad. Utkastet bygger på
-          bestämmelserna i 12 kap. jordabalken (hyreslagen) och vanligt förekommande
+          <strong>utkast till hyresavtal</strong> för bostad. Tjänsten avgör utifrån dina svar
+          om lagen (2012:978) om uthyrning av egen bostad eller 12 kap. jordabalken (hyreslagen)
+          är tillämplig, och bygger utkastet på den lagen samt vanligt förekommande
           standardvillkor. Tjänsten är <strong>inte</strong> en juristbyrå, lämnar{" "}
           <strong>inte</strong> juridisk rådgivning, och är <strong>inte</strong> part i det
           avtal som upprättas mellan hyresvärd och hyresgäst. Ingen klient- eller
@@ -59,7 +62,8 @@ export default function Villkor() {
 
         <H>4. Tvingande lagstiftning gäller alltid</H>
         <p>
-          Stora delar av hyreslagen är tvingande till hyresgästens förmån. Ett avtalsvillkor
+          Stora delar av hyreslagen och lagen om uthyrning av egen bostad är tvingande till
+          hyresgästens förmån. Ett avtalsvillkor
           som är mindre förmånligt för hyresgästen än lagen är utan verkan, oavsett vad som
           står i dokumentet. Tjänsten kan inte garantera att ett enskilt villkor är giltigt
           i din situation.
@@ -96,8 +100,13 @@ export default function Villkor() {
         <p>Svensk rätt tillämpas på dessa villkor och på användningen av Tjänsten.</p>
 
         <p className="mt-8 text-sm text-gray-500">
-          Tjänsten tillhandahålls av Adviseo. Frågor: kontakta oss via webbplatsen.
-          {/* TODO: ersätt med juridiskt företagsnamn, org.nr och kontaktuppgift. */}
+          Tjänsten tillhandahålls av {siteValue(SITE.operator)}
+          {SITE.orgNumber ? `, org.nr ${SITE.orgNumber}` : ", org.nr uppgift saknas"}. Kontakt:{" "}
+          {siteValue(SITE.contactEmail)}. Se även{" "}
+          <Link href="/integritetspolicy" className="underline">
+            integritetspolicyn
+          </Link>
+          .
         </p>
 
         <div className="mt-10">

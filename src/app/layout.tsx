@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Skapa Hyresavtal – juridiskt korrekt avtal på minuter",
+  title: "Skapa hyresavtal – rätt lag för din uthyrning",
   description:
-    "Skapa ett juridiskt korrekt hyresavtal för bostad enligt 12 kap. Jordabalken (Hyreslagen). Guidat flöde, gratis PDF, anpassat efter tillsvidare eller bestämd tid.",
+    "Skapa ett hyresavtal för bostad som utgår från rätt lag: lagen om uthyrning av egen bostad eller hyreslagen. Guidat flöde, korrekta uppsägningstider och gratis PDF.",
   keywords: [
     "hyresavtal",
     "hyreskontrakt",
     "hyresavtal mall",
     "andrahandsuthyrning avtal",
-    "hyresavtal bostad",
+    "uthyrning av egen bostad",
   ],
   openGraph: {
-    title: "Skapa Hyresavtal – juridiskt korrekt på minuter",
+    title: "Skapa hyresavtal – rätt lag för din uthyrning",
     description:
-      "Guidat flöde som skapar ett korrekt hyresavtal enligt Hyreslagen. Gratis PDF.",
+      "Guidat flöde som avgör om lagen om uthyrning av egen bostad eller hyreslagen gäller, och skapar avtalet därefter. Gratis PDF.",
     type: "website",
   },
 };
@@ -24,7 +24,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="sv">
+    <html lang="sv-SE">
       <body>{children}</body>
     </html>
   );
