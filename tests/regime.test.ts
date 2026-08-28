@@ -1,0 +1,191 @@
+/**
+ * Acceptanskriterier §13, T1-T10. Regressionsskydd för lagvalsmotorn.
+ * Poängen med hela ombyggnaden är att T1 och T3 ger olika uppsägningstid.
+ */
+
+import { test } from "node:test";
+import assert from "node:assert/strict";
+
+import {
+  addMonths,
+  daysBetween,
+  exceedsMonths,
+  monthsBetween,
+  resolveLegalContext,
+  resolveLegalRegime,
+} from "../src/lib/legal/regime";
+import { T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, base } from "./fixtures";
+
+test("T1 bostadsrätt, privat, permanent, första -> lagen om uthyrning av egen bostad", () => {
+  const ctx = resolveLegalContext(T1);
+  assert.equal(ctx.regime, "PRIVATE_2012_978");
+  assert.deepEqual(ctx.noticePeriods.tenant.months, 1);
+  assert.equal(ctx.noticePeriods.tenant.toMonthEnd, true);
+  assert.deepEqual(ctx.noticePeriods.landlord.months, 3);
+  assert.equal(ctx.noticePeriods.landlord.toMonthEnd, true);
+  assert.equal(ctx.securityOfTenure.status, "none");
+  assert.match(ctx.securityOfTenure.legalBasis, /3 a §/);
+});
+
+test("T2 bostadsrätt, privat, permanent, ytterligare -> JB12, 3/3 månader", () => {
+  const ctx = resolveLegalContext(T2);
+  assert.equal(ctx.regime, "JB12");
+  assert.equal(ctx.noticePeriods.tenant.months, 3);
+  assert.equal(ctx.noticePeriods.landlord.months, 3);
+});
+
+test("T3 hyresrätt i andra hand -> JB12, 3/3, besittningsskydd efter 24 mån, W-RENT-CRIMINAL", () => {
+  const ctx = resolveLegalContext(T3);
+  assert.equal(ctx.regime, "JB12");
+  assert.equal(ctx.noticePeriods.tenant.months, 3);
+  assert.equal(ctx.noticePeriods.landlord.months, 3);
+  assert.equal(ctx.securityOfTenure.status, "arises_after");
+  assert.equal(
+    ctx.securityOfTenure.status === "arises_after" ? ctx.securityOfTenure.months : null,
+    24
+  );
+  assert.ok(ctx.warnings.some((w) => w.id === "W-RENT-CRIMINAL"));
+});
+
+test("T4 villa, privat, fritidsändamål -> JB12", () => {
+  assert.equal(resolveLegalRegime(T4), "JB12");
+});
+
+test("T5 villa, näringsverksamhet, permanent -> JB12", () => {
+  assert.equal(resolveLegalRegime(T5), "JB12");
+});
+
+test("T6 rum i egen bostad, privat, permanent, första -> PRIVATE, inget besittningsskydd", () => {
+  const ctx = resolveLegalContext(T6);
+  assert.equal(ctx.regime, "PRIVATE_2012_978");
+  assert.equal(ctx.securityOfTenure.status, "none");
+});
+
+test("T7 JB12, bestämd tid 2 månader -> uppsägningstid 1 vecka", () => {
+  const ctx = resolveLegalContext(T7);
+  assert.equal(ctx.regime, "JB12");
+  assert.equal(ctx.noticePeriods.landlord.weeks, 1);
+  assert.equal(ctx.noticePeriods.landlord.months, undefined);
+  assert.equal(ctx.requiresNoticeToEnd, false);
+});
+
+test("T8 JB12, bestämd tid 6 månader -> uppsägningstid 3 månader", () => {
+  const ctx = resolveLegalContext(T8);
+  assert.equal(ctx.noticePeriods.landlord.months, 3);
+  assert.equal(ctx.requiresNoticeToEnd, false);
+});
+
+test("T9 JB12, bestämd tid 12 månader -> 3 månader och krav på uppsägning", () => {
+  const ctx = resolveLegalContext(T9);
+  assert.equal(ctx.noticePeriods.landlord.months, 3);
+  assert.equal(ctx.requiresNoticeToEnd, true);
+  assert.ok(ctx.warnings.some((w) => w.id === "W-FIXED-9M"));
+});
+
+test("T10 PRIVATE, bestämd tid 12 månader -> 1/3 månader, ingen niomånadersregel", () => {
+  const ctx = resolveLegalContext(T10);
+  assert.equal(ctx.regime, "PRIVATE_2012_978");
+  assert.equal(ctx.noticePeriods.tenant.months, 1);
+  assert.equal(ctx.noticePeriods.landlord.months, 3);
+  assert.equal(ctx.requiresNoticeToEnd, false);
+  assert.ok(!ctx.warnings.some((w) => w.id === "W-FIXED-9M"));
+});
+
+test("regressionstest: T1 och T3 ger olika uppsägningstid för hyresgästen", () => {
+  const t1 = resolveLegalContext(T1).noticePeriods.tenant;
+  const t3 = resolveLegalContext(T3).noticePeriods.tenant;
+  assert.notDeepEqual(t1.months, t3.months);
+});
+
+test("beslutstabellen utvärderas i ordning — näringsverksamhet slår allt", () => {
+  const a = base({ landlordIsBusiness: true, purpose: "permanent", privateRentalOrdinal: "first" });
+  assert.equal(resolveLegalRegime(a), "JB12");
+});
+
+test("tredjehandsupplåtelse faller under JB12", () => {
+  assert.equal(resolveLegalRegime(base({ landlordTitle: "second_hand" })), "JB12");
+});
+
+test("JB12 bestämd tid högst två veckor -> uppsägningstid 1 dag", () => {
+  const ctx = resolveLegalContext(
+    base({
+      landlordTitle: "first_hand_lease",
+      contractType: "fixed",
+      startDate: "2030-01-01",
+      endDate: "2030-01-14",
+    })
+  );
+  assert.equal(ctx.noticePeriods.landlord.days, 1);
+});
+
+test("JB12 bestämd tid exakt tre månader -> 1 vecka, en dag mer -> 3 månader", () => {
+  const treMan = resolveLegalContext(
+    base({ landlordTitle: "first_hand_lease", contractType: "fixed", startDate: "2030-01-01", endDate: "2030-04-01" })
+  );
+  assert.equal(treMan.noticePeriods.landlord.weeks, 1);
+  const overTreMan = resolveLegalContext(
+    base({ landlordTitle: "first_hand_lease", contractType: "fixed", startDate: "2030-01-01", endDate: "2030-04-02" })
+  );
+  assert.equal(overTreMan.noticePeriods.landlord.months, 3);
+});
+
+test("hyresgästens tvingande tremånadersrätt gäller under JB12 men inte under PRIVATE", () => {
+  assert.equal(resolveLegalContext(T3).noticePeriods.tenantStatutoryThreeMonths, true);
+  assert.equal(resolveLegalContext(T1).noticePeriods.tenantStatutoryThreeMonths, false);
+});
+
+test("avtalad förlängning höjer hyresvärdens uppsägningstid men aldrig hyresgästens", () => {
+  const ctx = resolveLegalContext(base({ noticeExtendedTenant: 6 }));
+  assert.equal(ctx.noticePeriods.landlord.months, 6);
+  assert.equal(ctx.noticePeriods.tenant.months, 1);
+});
+
+test("kortare avtalad tid än lagens minimum lämnas utan avseende", () => {
+  const ctx = resolveLegalContext(base({ noticeExtendedTenant: 1 }));
+  assert.equal(ctx.noticePeriods.landlord.months, 3);
+});
+
+test("möblerat rum utanför egen bostad ger besittningsskydd efter 9 månader", () => {
+  const ctx = resolveLegalContext(
+    base({ privateRentalOrdinal: "additional", rooms: 1, furnished: "full" })
+  );
+  assert.equal(ctx.regime, "JB12");
+  assert.equal(
+    ctx.securityOfTenure.status === "arises_after" ? ctx.securityOfTenure.months : null,
+    9
+  );
+});
+
+test("fritidsbostad under JB12 ger besittningsskydd efter 9 månader", () => {
+  const ctx = resolveLegalContext(base({ propertyType: "holiday_home", purpose: "leisure" }));
+  assert.equal(
+    ctx.securityOfTenure.status === "arises_after" ? ctx.securityOfTenure.months : null,
+    9
+  );
+});
+
+test("ordinär andrahandsuthyrning av bostadsrätt (ytterligare) ger fullt besittningsskydd", () => {
+  const ctx = resolveLegalContext(base({ privateRentalOrdinal: "additional" }));
+  assert.equal(ctx.securityOfTenure.status, "full");
+});
+
+test("saknat samtycke ger blockerande varning", () => {
+  const ctx = resolveLegalContext(base({ boardConsentObtained: "no" }));
+  const w = ctx.warnings.find((x) => x.id === "W-CONSENT");
+  assert.ok(w);
+  assert.equal(w?.level, "blocking");
+});
+
+test("deposition över tre månadshyror och förskottshyra ger varningar", () => {
+  const ctx = resolveLegalContext(base({ depositAmount: 40000, prepaidRentMonths: 3 }));
+  assert.ok(ctx.warnings.some((w) => w.id === "W-DEPOSIT-HIGH"));
+  assert.ok(ctx.warnings.some((w) => w.id === "W-PREPAID"));
+});
+
+test("datumhjälpare räknar kalendermånader och klämmer månadsslut", () => {
+  assert.equal(addMonths(new Date(Date.UTC(2030, 0, 31)), 1).toISOString().slice(0, 10), "2030-02-28");
+  assert.equal(monthsBetween(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2031, 0, 1))), 12);
+  assert.equal(daysBetween(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2030, 0, 15))), 14);
+  assert.equal(exceedsMonths(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2030, 9, 1)), 9), false);
+  assert.equal(exceedsMonths(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2030, 9, 2)), 9), true);
+});
