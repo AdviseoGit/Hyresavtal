@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prebuild": "node scripts/check-legal-review.mjs",
+    "build:tests": "tsc -p tsconfig.test.json",
+    "test": "npm run build:tests && node --test \".test-build/tests/**/*.test.js\"",
+    "check:legal-review": "node scripts/check-legal-review.mjs"
   },
   "dependencies": {
     "next": "^14.2.32",
