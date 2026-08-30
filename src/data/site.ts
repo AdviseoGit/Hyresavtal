@@ -12,7 +12,7 @@ export const SITE = {
   operator: process.env.NEXT_PUBLIC_SITE_OPERATOR || "Adivseo AB",
   orgNumber: process.env.NEXT_PUBLIC_SITE_ORG_NUMBER || "559312-5437",
   contactEmail: process.env.NEXT_PUBLIC_SITE_CONTACT_EMAIL || "simon@adviseo.se",
-  address: process.env.NEXT_PUBLIC_SITE_ADDRESS ?? "",
+  address: process.env.NEXT_PUBLIC_SITE_ADDRESS || "Gustavsgatan 23, 431 66 Mölndal",
 };
 
 export const MISSING = "uppgift saknas";
