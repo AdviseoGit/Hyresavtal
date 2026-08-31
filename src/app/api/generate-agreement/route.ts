@@ -8,6 +8,7 @@ import { createEmptyAnswerSet, type AnswerSet } from "../../../lib/types";
 import { agreementFileName } from "../../../lib/format";
 import { resolveLegalContext } from "../../../lib/legal/regime";
 import { assertClausesReviewed } from "../../../lib/legal/review";
+import { PAUSED, PAUSE_API_MESSAGE } from "../../../lib/service-status";
 import { validateAll } from "../../../lib/validation";
 import { generateDocuments, type DocumentPart } from "../../../lib/pdf/agreement";
 import { mergePdfs } from "../../../lib/pdf/document";
@@ -38,6 +39,11 @@ export async function POST(request: Request) {
   } catch {
     // Felmeddelandet från JSON.parse kan innehålla delar av kroppen — logga det inte.
     return fail("Kunde inte läsa begäran.", 400);
+  }
+
+  // Driftspärr: generatorn bygger på upphävd lag, se src/lib/service-status.ts.
+  if (PAUSED) {
+    return fail(PAUSE_API_MESSAGE, 503);
   }
 
   try {
