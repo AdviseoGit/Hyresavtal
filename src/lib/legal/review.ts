@@ -7,6 +7,12 @@
  * skicka ut ogranskad text.
  *
  * Under utveckling och granskning sätts ALLOW_UNREVIEWED_CLAUSES=1.
+ *
+ * OBS: 2026-08-31 beslutade uppdragsgivaren att lansera utan juristgranskning.
+ * Klausulerna bär därför granskningsposter med reviewKind "machine". Grinden
+ * släpper igenom dem, men reviewStatus() redovisar hur många som är maskinellt
+ * respektive juristgranskade, så att skillnaden inte går förlorad. Se
+ * docs/beslut-lansering-utan-juristgranskning.md.
  */
 
 import { CLAUSES, type ClauseDef } from "./clauses";
@@ -35,16 +41,23 @@ export interface ReviewStatus {
   unreviewed: string[];
   requiredVersion: string;
   allowUnreviewed: boolean;
+  /** Antal klausuler granskade av verksam jurist (§12:s egentliga krav). */
+  lawyerReviewed: number;
+  /** Antal klausuler som bara har maskinell granskning. */
+  machineReviewed: number;
 }
 
 export function reviewStatus(): ReviewStatus {
   const unreviewed = unreviewedClauses();
+  const granskade = CLAUSES.filter(isReviewed);
   return {
     total: CLAUSES.length,
-    reviewed: CLAUSES.length - unreviewed.length,
+    reviewed: granskade.length,
     unreviewed,
     requiredVersion: REQUIRED_REVIEW_VERSION,
     allowUnreviewed: allowUnreviewed(),
+    lawyerReviewed: granskade.filter((c) => c.review.reviewKind === "lawyer").length,
+    machineReviewed: granskade.filter((c) => c.review.reviewKind !== "lawyer").length,
   };
 }
 

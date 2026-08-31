@@ -17,8 +17,17 @@ const { reviewStatus } = require("../.test-build/src/lib/legal/review.js");
 const status = reviewStatus();
 
 console.log(
-  `Juristgranskning: ${status.reviewed}/${status.total} klausuler granskade (krav: ${status.requiredVersion}).`
+  `Granskning: ${status.reviewed}/${status.total} klausuler (krav: ${status.requiredVersion}) — ` +
+    `${status.lawyerReviewed} av jurist, ${status.machineReviewed} maskinellt.`
 );
+
+if (status.lawyerReviewed < status.total) {
+  console.warn(
+    `OBS: ${status.total - status.lawyerReviewed} klausuler saknar juristgranskning och går ut ` +
+      `enbart på maskinell kontroll. Beslut fattat av uppdragsgivaren 2026-08-31, se ` +
+      `docs/beslut-lansering-utan-juristgranskning.md.`
+  );
+}
 
 if (status.unreviewed.length === 0) process.exit(0);
 

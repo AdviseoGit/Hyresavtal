@@ -16,7 +16,7 @@
  * Se docs/juristgranskning.md (fynd A1/F47) och docs/atgardslista.md.
  */
 
-export const PAUSED = true;
+export const PAUSED = false;
 
 export const PAUSE_HEADING = "Avtalsgenereringen är pausad";
 

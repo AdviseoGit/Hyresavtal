@@ -21,7 +21,33 @@ export interface ClauseReview {
   reviewedBy?: string;
   reviewedAt?: string;
   reviewVersion?: string;
+  /**
+   * Vilken sorts granskning posten avser.
+   *
+   * "lawyer" = granskad av verksam jurist, vilket är vad kravspecifikationen
+   * §12 efterfrågar. "machine" = maskinellt framtagen och maskinellt
+   * kontrollerad mot författningstext, utan juristgranskning.
+   *
+   * Fältet finns för att de två aldrig ska kunna förväxlas i efterhand. En
+   * senare juristgranskning ersätter posten och byter arten till "lawyer".
+   */
+  reviewKind?: "lawyer" | "machine";
 }
+
+/**
+ * Granskningsposten för den maskinella genomgången 2026-08-31.
+ *
+ * Klausultexten är kontrollerad mot privatuthyrningslagen (2026:772) och
+ * 12 kap. jordabalken i lydelse enligt SFS 2026:773, i tre pass varav det
+ * sista adversariellt. Ingen verksam jurist har läst texten. Se
+ * docs/beslut-lansering-utan-juristgranskning.md.
+ */
+const MASKINELL_GRANSKNING: ClauseReview = {
+  reviewedBy: "Maskinell granskning (Claude Opus 5) — ej verksam jurist",
+  reviewedAt: "2026-08-31",
+  reviewVersion: "v1",
+  reviewKind: "machine",
+};
 
 export interface ClauseDef {
   id: string;
@@ -271,7 +297,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Parter",
     order: 10,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresvärd: {{landlordName}}, {{landlordIdNumber}}, {{landlordAddress}}. E-post {{landlordEmail}}, telefon {{landlordPhone}}.\n" +
       "Hyresgäst:\n{{tenantList}}\n" +
@@ -282,7 +308,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Solidariskt betalningsansvar",
     order: 20,
     condition: (a) => a.tenants.length > 1,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästerna svarar solidariskt för samtliga förpliktelser enligt detta avtal. " +
       "Hyresvärden har rätt att kräva hela hyran och övriga belopp av vilken som helst av hyresgästerna. " +
@@ -293,7 +319,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Hyresobjektet",
     order: 30,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Upplåtelsen avser bostadslägenheten på adressen {{objectAddress}}, lägenhetsnummer {{apartmentNumber}}, fastighetsbeteckning {{propertyDesignation}}.\n" +
       "Lägenheten omfattar {{rooms}} rum om {{areaSqm}} kvm, våningsplan {{floor}}. I upplåtelsen ingår {{objectExtras}}.\n" +
@@ -305,7 +331,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Gemensamma utrymmen",
     order: 35,
     condition: (a) => a.propertyType === "room_in_own_home",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Upplåtelsen avser en del av upplåtarens egen bostad. Följande utrymmen nyttjas gemensamt: {{sharedAreas}}.",
   },
@@ -314,7 +340,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Möblering och inventarier",
     order: 40,
     condition: (a) => a.furnished !== "none" && a.furnished !== "",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Lägenheten upplåts {{furnishedLabel}}. Den möblering och de inventarier som ingår framgår av bifogad inventarielista, som utgör en del av detta avtal.\n" +
       "Hyresgästen ska vårda inventarierna och återlämna dem vid hyrestidens slut i samma skick som vid tillträdet, med undantag för normalt slitage.",
@@ -325,7 +351,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 50,
     condition: always,
     legalBasis: "1 kap. 1 och 3 §§ privatuthyrningslagen (2026:772) samt 12 kap. jordabalken",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "På detta avtal tillämpas {{regimeName}}. {{regimeExplanation}}\n" +
       "Avtalsvillkor som är mindre förmånliga för hyresgästen än vad som följer av tvingande bestämmelser i tillämplig lag är utan verkan.",
@@ -338,7 +364,7 @@ export const CLAUSES: ClauseDef[] = [
       (a.landlordTitle === "condominium" && a.boardConsentObtained !== "yes") ||
       ((a.landlordTitle === "first_hand_lease" || a.landlordTitle === "second_hand") &&
         a.landlordConsentObtained !== "yes"),
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Upplåtelsen förutsätter samtycke från bostadsrättsföreningens styrelse respektive tillstånd från hyresvärden eller hyresnämnden. Sådant samtycke eller tillstånd är ännu inte lämnat.\n" +
       "Avtalet gäller under förutsättning att samtycke eller tillstånd lämnas. Om samtycke eller tillstånd inte lämnas har vardera parten rätt att frånträda avtalet med omedelbar verkan, varvid erlagd hyra för tid efter frånträdandet återbetalas.\n" +
@@ -349,7 +375,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Samtycke och tillstånd",
     order: 56,
     condition: (a) => a.boardConsentObtained === "yes" || a.landlordConsentObtained === "yes",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body: "{{consentBoard}}\n{{consentLandlord}}",
   },
   {
@@ -357,7 +383,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Hyrestid",
     order: 60,
     condition: (a) => a.contractType === "indefinite",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Avtalet gäller från och med {{startDate}} och löper tills vidare. Avtalet upphör att gälla efter uppsägning enligt vad som anges nedan.",
   },
@@ -366,7 +392,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Hyrestid",
     order: 60,
     condition: (a) => a.contractType === "fixed",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Avtalet gäller för bestämd tid från och med {{startDate}} till och med {{endDate}}, vilket motsvarar {{durationMonths}} månader.\n" +
       "{{renewalText}}",
@@ -377,7 +403,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 65,
     legalBasis: "12 kap. 3 § jordabalken",
     condition: (_a, ctx) => ctx.requiresNoticeToEnd,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Eftersom hyresförhållandet avses vara längre än nio månader i följd upphör avtalet inte automatiskt vid hyrestidens utgång. Avtalet måste sägas upp för att upphöra att gälla.",
   },
@@ -386,7 +412,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Uppsägning",
     order: 70,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "{{noticeLandlordSentence}}\n" +
       "Hyresgästen kan säga upp avtalet {{noticeTenant}}.\n" +
@@ -399,7 +425,7 @@ export const CLAUSES: ClauseDef[] = [
     legalBasis: "12 kap. 5 § jordabalken",
     condition: (_a, ctx) =>
       ctx.regime === "JB12" && ctx.noticePeriods.tenantStatutoryThreeMonths,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästen har alltid rätt att säga upp avtalet till det månadsskifte som inträffar tidigast tre månader från uppsägningen, även om avtalet löper på bestämd tid. Denna rätt kan inte avtalas bort.",
   },
@@ -410,7 +436,7 @@ export const CLAUSES: ClauseDef[] = [
     legalBasis:
       "6 kap. 1 § andra stycket och 1 kap. 4 § privatuthyrningslagen (2026:772)",
     condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästen har alltid rätt att säga upp avtalet till det månadsskifte som inträffar tidigast tre månader från uppsägningen, även om avtalet löper på bestämd tid.\n" +
       "Ett avtalsvillkor som är till nackdel för hyresgästen jämfört med lagen är utan verkan mot hyresgästen. Rätten kan därför inte avtalas bort.",
@@ -421,7 +447,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 74,
     legalBasis: "12 kap. 8 § jordabalken",
     condition: (_a, ctx) => ctx.regime === "JB12",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "En uppsägning ska vara skriftlig. Uppsägningen ska delges motparten. Skriftlig uppsägning som sänds i rekommenderat brev till motpartens senast kända adress anses ha skett när brevet lämnades in för postbefordran.\n" +
       "Parterna ska underrätta varandra om ändrade kontaktuppgifter.",
@@ -432,7 +458,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 74,
     legalBasis: "6 kap. 7-9 §§ privatuthyrningslagen (2026:772)",
     condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "En uppsägning ska vara skriftlig. Om det är hyresgästen som säger upp avtalet får uppsägningen dock vara muntlig, förutsatt att hyresvärden lämnar ett skriftligt erkännande av uppsägningen.\n" +
       "En uppsägning har skett när den som söks för uppsägningen har tagit emot den.\n" +
@@ -444,7 +470,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Besittningsskydd föreligger inte",
     order: 80,
     condition: (_a, ctx) => ctx.securityOfTenure.status === "none",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "{{tenureReason}} Hyresgästen har därmed inte rätt till förlängning av avtalet när det upphör efter uppsägning. Detta följer av {{tenureLegalBasis}}.",
   },
@@ -453,7 +479,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Besittningsskydd",
     order: 80,
     condition: (_a, ctx) => ctx.securityOfTenure.status !== "none",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "{{tenureReason}} Detta följer av {{tenureLegalBasis}}.\n" +
       "En överenskommelse om att hyresgästen avstår från besittningsskydd ska träffas i en särskilt upprättad handling och kräver som huvudregel hyresnämndens godkännande. Någon sådan överenskommelse ingår inte i detta avtal.",
@@ -464,7 +490,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 90,
     legalBasis: "2 kap. 1, 5 och 6 §§ privatuthyrningslagen (2026:772)",
     condition: (_a, ctx) => ctx.rentRule.clauseId === "C-RENT-PRIVATE",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyran uppgår till {{totalRent}} per månad, varav grundhyra {{baseRent}}.\n" +
       "{{rentPrinciple}}",
@@ -475,7 +501,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 90,
     legalBasis: "12 kap. 55 § jordabalken",
     condition: (_a, ctx) => ctx.rentRule.clauseId === "C-RENT-JB",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyran uppgår till {{totalRent}} per månad, varav grundhyra {{baseRent}}.\n" +
       "{{rentPrinciple}}",
@@ -485,7 +511,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Hyresjustering",
     order: 95,
     condition: (a) => a.rentAdjustment !== "none" && a.rentAdjustment !== "",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyran kan ändras under hyrestiden. Ändring sker genom förhandling mellan parterna, eller om parterna avtalat om index, med utgångspunkt i {{rentAdjustmentIndex}}.\n" +
       "En höjning gäller tidigast från och med den månad som infaller närmast efter det att hyresgästen underrättats skriftligen. Tvingande bestämmelser om hyressättning gäller framför detta villkor.",
@@ -495,7 +521,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Betalning",
     order: 100,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyran betalas i förskott {{paymentDue}} till {{paymentMethod}} {{paymentReference}}.\n" +
       "Betalningen ska vara hyresvärden tillhanda senast på förfallodagen.",
@@ -506,7 +532,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 105,
     legalBasis: "6 § räntelagen (1975:635)",
     condition: (a) => a.lateInterest === "statutory",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Vid försenad betalning utgår dröjsmålsränta enligt räntelagen, med referensräntan plus åtta procentenheter, från förfallodagen till dess betalning sker.",
   },
@@ -515,7 +541,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Driftskostnader",
     order: 110,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body: "Följande gäller för driftskostnader:\n{{costTable}}\n{{ownContractNote}}",
   },
   {
@@ -523,7 +549,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Deposition",
     order: 120,
     condition: (a) => (a.depositAmount ?? 0) > 0,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästen betalar en deposition om {{depositAmount}} senast på tillträdesdagen. Depositionen är en säkerhet för hyresgästens förpliktelser enligt avtalet och utgör inte förskottsbetald hyra.\n" +
       "Depositionen återbetalas inom {{depositReturnDays}} dagar från det att lägenheten återlämnats och besiktigats, efter avdrag för: {{depositDeductions}}.\n" +
@@ -534,7 +560,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Besiktning",
     order: 130,
     condition: (a) => a.inspectionOnMoveIn || a.inspectionOnMoveOut,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Lägenheten besiktigas gemensamt av parterna vid tillträdet och vid avflyttningen. Resultatet antecknas i ett besiktningsprotokoll som undertecknas av båda parter och bifogas detta avtal.\n" +
       "Kända brister vid tillträdet: {{existingDamage}}",
@@ -544,7 +570,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Nycklar",
     order: 140,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Följande nycklar överlämnas till hyresgästen vid tillträdet:\n{{keysList}}\n" +
       "Samtliga nycklar ska återlämnas senast vid hyrestidens slut. Vid förlorad nyckel svarar hyresgästen för kostnaden för ersättningsnyckel och, om låsbyte krävs, för denna kostnad, dock högst {{keyReplacementCost}} om belopp angetts.\n" +
@@ -556,7 +582,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 150,
     legalBasis: "12 kap. 24 § jordabalken",
     condition: (_a, ctx) => ctx.regime === "JB12",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "{{maintenanceText}}\n" +
       "Hyresgästen ska väl vårda lägenheten med vad därtill hör och är skyldig att ersätta skada som uppkommit genom hyresgästens vållande eller vårdslöshet.\n" +
@@ -568,7 +594,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 150,
     legalBasis: "4 kap. 2-4 §§ privatuthyrningslagen (2026:772)",
     condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "{{maintenanceText}}\n" +
       "Hyresgästen ska under hyrestiden vårda lägenheten och det som hör till den väl.\n" +
@@ -582,7 +608,7 @@ export const CLAUSES: ClauseDef[] = [
     legalBasis:
       "12 kap. 26 § jordabalken, som enligt 4 kap. 7 § privatuthyrningslagen (2026:772) tillämpas även under den lagen",
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresvärden har rätt att utan uppskov få tillträde till lägenheten för att utföra brådskande arbete som inte kan skjutas upp.\n" +
       "För annat tillträde, exempelvis besiktning eller visning, ska hyresvärden komma överens med hyresgästen om tidpunkt och underrätta hyresgästen minst {{accessNotice}} dagar i förväg.",
@@ -592,7 +618,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Ordningsregler",
     order: 170,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Lägenheten får bebos av högst {{maxOccupants}} personer.\n" +
       "{{smokingText}} {{petsText}}\n" +
@@ -604,7 +630,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Försäkring",
     order: 180,
     condition: (a) => a.tenantInsuranceRequired === true,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästen ska under hela hyrestiden inneha gällande hemförsäkring och ska på begäran visa upp bevis om detta.",
   },
@@ -614,7 +640,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 190,
     legalBasis: "12 kap. 39 § jordabalken",
     condition: (a, ctx) => ctx.regime === "JB12" && a.sublettingAllowed === false,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästen får inte upplåta lägenheten eller del av den i andra hand utan hyresvärdens skriftliga samtycke. Detta gäller även korttidsuthyrning genom förmedlingstjänster.",
   },
@@ -625,7 +651,7 @@ export const CLAUSES: ClauseDef[] = [
     legalBasis: "5 kap. 2 och 3 §§ privatuthyrningslagen (2026:772)",
     condition: (a, ctx) =>
       ctx.regime === "PRIVATE_2026_772" && a.sublettingAllowed === false,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresgästen får inte utan hyresvärdens samtycke hyra ut eller på något annat sätt upplåta lägenheten i andra hand till någon annan för självständigt brukande. Detta gäller även korttidsuthyrning genom förmedlingstjänster. Om hyresgästen inte använder lägenheten som bostad i beaktansvärd utsträckning anses en upplåtelse alltid vara för självständigt brukande.\n" +
       "Hyresgästen får inte heller låta utomstående personer bo i lägenheten i en utsträckning som hyresvärden inte skäligen ska behöva godta. Utgör lägenheten del av hyresvärdens bostad krävs hyresvärdens samtycke för att ha inneboende.",
@@ -636,7 +662,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 200,
     legalBasis: "12 kap. 42 § jordabalken",
     condition: (_a, ctx) => ctx.regime === "JB12",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresrätten är förverkad och hyresvärden har rätt att säga upp avtalet i förtid bland annat om hyresgästen dröjer med att betala hyran mer än en vecka efter förfallodagen, utan behövligt samtycke upplåter lägenheten i andra hand, vanvårdar lägenheten eller utsätter omgivningen för störningar.\n" +
       "Hyresgästen har i vissa fall rätt att återvinna hyresrätten enligt 12 kap. 43-44 §§ jordabalken.",
@@ -647,7 +673,7 @@ export const CLAUSES: ClauseDef[] = [
     order: 200,
     legalBasis: "6 kap. 3, 5 och 6 §§ privatuthyrningslagen (2026:772)",
     condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Hyresvärden har rätt att säga upp avtalet till omedelbart upphörande bland annat om hyresgästen dröjer med att betala hyran mer än två veckor efter förfallodagen, utan samtycke överlåter hyresrätten eller upplåter lägenheten i andra hand eller till inneboende, använder lägenheten i strid med avtalet, vanvårdar lägenheten, brister i skötsamhet eller utsätter omgivningen för störningar i boendet.\n" +
       "För de flesta av grunderna gäller att hyresgästen först ska ha uppmanats att rätta sig. Rättar sig hyresgästen innan uppsägning har skett har hyresvärden inte längre rätt att säga upp avtalet på den grunden. Detta gäller dock inte vid särskilt allvarlig bristande skötsamhet eller särskilt allvarliga störningar i boendet.\n" +
@@ -658,7 +684,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Tvist",
     order: 210,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Tvist med anledning av detta avtal prövas av hyresnämnden i den mån frågan hör till nämndens behörighet, och i övrigt av allmän domstol.",
   },
@@ -667,7 +693,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Om hur detta dokument har tagits fram",
     order: 890,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Detta avtal har genererats automatiskt utifrån de uppgifter parterna lämnat i ett webbformulär. Avtalstexten är maskinellt framtagen och maskinellt kontrollerad mot lagtext. Den har inte granskats av en verksam jurist.\n" +
       "Parterna uppmanas att läsa igenom avtalet innan det undertecknas, och att låta en jurist eller hyresnämnden granska det vid osäkerhet. Tvingande bestämmelser gäller framför avtalets lydelse: ett villkor som är till hyresgästens nackdel jämfört med lagen är utan verkan mot hyresgästen, oavsett vad som står här.",
@@ -677,7 +703,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Underskrifter",
     order: 900,
     condition: always,
-    review: {},
+    review: MASKINELL_GRANSKNING,
     body:
       "Detta avtal har upprättats i {{copies}} likalydande exemplar, varav parterna tagit var sitt.\n" +
       "Ändringar och tillägg till avtalet ska vara skriftliga för att gälla.\n" +
