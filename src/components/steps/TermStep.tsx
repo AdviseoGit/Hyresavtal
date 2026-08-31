@@ -52,7 +52,11 @@ export default function TermStep({ ctl, a, ctx }: StepProps) {
         {ctx.noticePeriods.tenantStatutoryThreeMonths && (
           <p>
             Hyresgästen har dessutom alltid rätt att säga upp avtalet till månadsskifte tidigast tre
-            månader bort, enligt 12 kap. 5 § jordabalken. Den rätten kan inte avtalas bort.
+            månader bort, enligt{" "}
+            {ctx.regime === "JB12"
+              ? "12 kap. 5 § jordabalken"
+              : "6 kap. 1 § andra stycket privatuthyrningslagen"}
+            . Den rätten kan inte avtalas bort.
           </p>
         )}
         <p className="text-xs text-sky-800">Lagrum: {ctx.noticePeriods.landlord.legalBasis}</p>

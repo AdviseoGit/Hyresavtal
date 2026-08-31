@@ -20,8 +20,8 @@ test("T1 (privatuthyrningslagen) ger förväntad klausullista", () => {
     "C-CONSENT-GIVEN",
     "C-TERM-INDEFINITE",
     "C-NOTICE",
-    "C-NOTICE-TENANT-STATUTORY",
-    "C-NOTICE-FORM",
+    "C-NOTICE-TENANT-STATUTORY-PRIVATE",
+    "C-NOTICE-FORM-PRIVATE",
     "C-TENURE-NONE",
     "C-RENT-PRIVATE",
     "C-PAYMENT",
@@ -29,12 +29,12 @@ test("T1 (privatuthyrningslagen) ger förväntad klausullista", () => {
     "C-COSTS",
     "C-INSPECTION",
     "C-KEYS",
-    "C-MAINTENANCE",
+    "C-MAINTENANCE-PRIVATE",
     "C-ACCESS",
     "C-RULES",
     "C-INSURANCE",
-    "C-SUBLET-BAN",
-    "C-FORFEITURE",
+    "C-SUBLET-BAN-PRIVATE",
+    "C-FORFEITURE-PRIVATE",
     "C-DISPUTE",
     "C-SIGNATURES",
   ]);
@@ -135,4 +135,27 @@ test("hyresklausulen påstår inte att nyttighetslistan är uttömmande", () => 
   );
   assert.match(ctx.rentRule.principle, /förbrukning/);
   assert.match(ctx.rentRule.principle, /skäligt belopp/);
+});
+
+test("ingen klausul under privatuthyrningslagen citerar hyreslagen på egen hand", () => {
+  // Regimläckage: en klausul med regimneutralt condition renderar hyreslagens
+  // regel i ett avtal där 12 kap. 1 c § JB säger att kapitlet inte gäller.
+  // Två undantag är riktiga: C-LEGAL-REGIME förklarar själva lagvalet, och
+  // C-ACCESS vilar på 4 kap. 7 § som uttryckligen tillämpar 12 kap. 26 § JB.
+  const tillatna = new Set(["C-LEGAL-REGIME", "C-ACCESS"]);
+  const lackage = buildClauses(T1, resolveLegalContext(T1))
+    .filter((c) => /12 kap\./.test(c.legalBasis ?? ""))
+    .map((c) => c.id)
+    .filter((id) => !tillatna.has(id));
+  assert.deepEqual(lackage, [], "klausuler citerar hyreslagen under fel regim");
+});
+
+test("förtida uppsägning under privatuthyrningslagen anger två veckor, inte en", () => {
+  // 6 kap. 3 § första stycket 1. Hyreslagens 12 kap. 42 § säger en vecka.
+  const text = buildClauses(T1, resolveLegalContext(T1))
+    .find((c) => c.id === "C-FORFEITURE-PRIVATE")!
+    .paragraphs.join(" ");
+  assert.match(text, /mer än två veckor efter förfallodagen/);
+  assert.ok(!/en vecka/.test(text));
+  assert.ok(!/12 kap\. 43-44/.test(text), "återvinning saknar motsvarighet i nya lagen");
 });

@@ -397,20 +397,46 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Hyresgästens uppsägningsrätt",
     order: 72,
     legalBasis: "12 kap. 5 § jordabalken",
-    condition: (_a, ctx) => ctx.noticePeriods.tenantStatutoryThreeMonths,
+    condition: (_a, ctx) =>
+      ctx.regime === "JB12" && ctx.noticePeriods.tenantStatutoryThreeMonths,
     review: {},
     body:
       "Hyresgästen har alltid rätt att säga upp avtalet till det månadsskifte som inträffar tidigast tre månader från uppsägningen, även om avtalet löper på bestämd tid. Denna rätt kan inte avtalas bort.",
+  },
+  {
+    id: "C-NOTICE-TENANT-STATUTORY-PRIVATE",
+    heading: "Hyresgästens uppsägningsrätt",
+    order: 72,
+    legalBasis:
+      "6 kap. 1 § andra stycket och 1 kap. 4 § privatuthyrningslagen (2026:772)",
+    condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
+    review: {},
+    body:
+      "Hyresgästen har alltid rätt att säga upp avtalet till det månadsskifte som inträffar tidigast tre månader från uppsägningen, även om avtalet löper på bestämd tid.\n" +
+      "Ett avtalsvillkor som är till nackdel för hyresgästen jämfört med lagen är utan verkan mot hyresgästen. Rätten kan därför inte avtalas bort.",
   },
   {
     id: "C-NOTICE-FORM",
     heading: "Uppsägningens form och delgivning",
     order: 74,
     legalBasis: "12 kap. 8 § jordabalken",
-    condition: always,
+    condition: (_a, ctx) => ctx.regime === "JB12",
     review: {},
     body:
       "En uppsägning ska vara skriftlig. Uppsägningen ska delges motparten. Skriftlig uppsägning som sänds i rekommenderat brev till motpartens senast kända adress anses ha skett när brevet lämnades in för postbefordran.\n" +
+      "Parterna ska underrätta varandra om ändrade kontaktuppgifter.",
+  },
+  {
+    id: "C-NOTICE-FORM-PRIVATE",
+    heading: "Uppsägningens form",
+    order: 74,
+    legalBasis: "6 kap. 7-9 §§ privatuthyrningslagen (2026:772)",
+    condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
+    review: {},
+    body:
+      "En uppsägning ska vara skriftlig. Om det är hyresgästen som säger upp avtalet får uppsägningen dock vara muntlig, förutsatt att hyresvärden lämnar ett skriftligt erkännande av uppsägningen.\n" +
+      "En uppsägning har skett när den som söks för uppsägningen har tagit emot den.\n" +
+      "Har den som söks för uppsägning angett en elektronisk adress dit meddelanden med anledning av hyresavtalet kan skickas, anses uppsägningen ha skett när den skickats till den adressen. Har mottagaren hemvist i Sverige anses uppsägning också ha skett när ett rekommenderat brev med uppsägningen, adresserat till mottagarens vanliga adress, har lämnats in för postbefordran.\n" +
       "Parterna ska underrätta varandra om ändrade kontaktuppgifter.",
   },
   {
@@ -529,7 +555,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Underhåll och skötsel",
     order: 150,
     legalBasis: "12 kap. 24 § jordabalken",
-    condition: always,
+    condition: (_a, ctx) => ctx.regime === "JB12",
     review: {},
     body:
       "{{maintenanceText}}\n" +
@@ -537,10 +563,24 @@ export const CLAUSES: ClauseDef[] = [
       "Hyresgästen ska utan dröjsmål underrätta hyresvärden om skador och brister som måste åtgärdas för att allvarlig olägenhet inte ska uppstå.",
   },
   {
+    id: "C-MAINTENANCE-PRIVATE",
+    heading: "Underhåll och skötsel",
+    order: 150,
+    legalBasis: "4 kap. 2-4 §§ privatuthyrningslagen (2026:772)",
+    condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
+    review: {},
+    body:
+      "{{maintenanceText}}\n" +
+      "Hyresgästen ska under hyrestiden vårda lägenheten och det som hör till den väl.\n" +
+      "Hyresgästen är skyldig att ersätta all skada som uppkommer genom hyresgästens vållande, och även skada som uppkommer genom vårdslöshet eller försummelse av någon som hör till hyresgästens hushåll, är inneboende eller besöker hyresgästen, eller som utför arbete i lägenheten för hyresgästens räkning. För brandskada som hyresgästen inte själv har vållat ansvarar hyresgästen endast om han eller hon har brustit i den omsorg och tillsyn som rimligen kan krävas.\n" +
+      "Hyresgästen ska genast informera hyresvärden om det uppkommer en skada eller brist som måste avhjälpas skyndsamt för att allvarlig olägenhet inte ska uppstå. Vid annan skada eller brist ska hyresvärden informeras så snart det kan ske.",
+  },
+  {
     id: "C-ACCESS",
     heading: "Hyresvärdens tillträde",
     order: 160,
-    legalBasis: "12 kap. 26 § jordabalken",
+    legalBasis:
+      "12 kap. 26 § jordabalken, som enligt 4 kap. 7 § privatuthyrningslagen (2026:772) tillämpas även under den lagen",
     condition: always,
     review: {},
     body:
@@ -573,21 +613,45 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Förbud mot vidareuthyrning",
     order: 190,
     legalBasis: "12 kap. 39 § jordabalken",
-    condition: (a) => a.sublettingAllowed === false,
+    condition: (a, ctx) => ctx.regime === "JB12" && a.sublettingAllowed === false,
     review: {},
     body:
       "Hyresgästen får inte upplåta lägenheten eller del av den i andra hand utan hyresvärdens skriftliga samtycke. Detta gäller även korttidsuthyrning genom förmedlingstjänster.",
+  },
+  {
+    id: "C-SUBLET-BAN-PRIVATE",
+    heading: "Förbud mot vidareuthyrning",
+    order: 190,
+    legalBasis: "5 kap. 2 och 3 §§ privatuthyrningslagen (2026:772)",
+    condition: (a, ctx) =>
+      ctx.regime === "PRIVATE_2026_772" && a.sublettingAllowed === false,
+    review: {},
+    body:
+      "Hyresgästen får inte utan hyresvärdens samtycke hyra ut eller på något annat sätt upplåta lägenheten i andra hand till någon annan för självständigt brukande. Detta gäller även korttidsuthyrning genom förmedlingstjänster. Om hyresgästen inte använder lägenheten som bostad i beaktansvärd utsträckning anses en upplåtelse alltid vara för självständigt brukande.\n" +
+      "Hyresgästen får inte heller låta utomstående personer bo i lägenheten i en utsträckning som hyresvärden inte skäligen ska behöva godta. Utgör lägenheten del av hyresvärdens bostad krävs hyresvärdens samtycke för att ha inneboende.",
   },
   {
     id: "C-FORFEITURE",
     heading: "Förverkande",
     order: 200,
     legalBasis: "12 kap. 42 § jordabalken",
-    condition: always,
+    condition: (_a, ctx) => ctx.regime === "JB12",
     review: {},
     body:
       "Hyresrätten är förverkad och hyresvärden har rätt att säga upp avtalet i förtid bland annat om hyresgästen dröjer med att betala hyran mer än en vecka efter förfallodagen, utan behövligt samtycke upplåter lägenheten i andra hand, vanvårdar lägenheten eller utsätter omgivningen för störningar.\n" +
       "Hyresgästen har i vissa fall rätt att återvinna hyresrätten enligt 12 kap. 43-44 §§ jordabalken.",
+  },
+  {
+    id: "C-FORFEITURE-PRIVATE",
+    heading: "Hyresvärdens rätt att säga upp avtalet i förtid",
+    order: 200,
+    legalBasis: "6 kap. 3, 5 och 6 §§ privatuthyrningslagen (2026:772)",
+    condition: (_a, ctx) => ctx.regime === "PRIVATE_2026_772",
+    review: {},
+    body:
+      "Hyresvärden har rätt att säga upp avtalet till omedelbart upphörande bland annat om hyresgästen dröjer med att betala hyran mer än två veckor efter förfallodagen, utan samtycke överlåter hyresrätten eller upplåter lägenheten i andra hand eller till inneboende, använder lägenheten i strid med avtalet, vanvårdar lägenheten, brister i skötsamhet eller utsätter omgivningen för störningar i boendet.\n" +
+      "För de flesta av grunderna gäller att hyresgästen först ska ha uppmanats att rätta sig. Rättar sig hyresgästen innan uppsägning har skett har hyresvärden inte längre rätt att säga upp avtalet på den grunden. Detta gäller dock inte vid särskilt allvarlig bristande skötsamhet eller särskilt allvarliga störningar i boendet.\n" +
+      "Hyresvärden har inte rätt att säga upp avtalet i förtid om det som ligger hyresgästen till last är av ringa betydelse.",
   },
   {
     id: "C-DISPUTE",
