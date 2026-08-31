@@ -203,7 +203,9 @@ export function templateValues(a: AnswerSet, ctx: LegalContext): Record<string, 
       ? "Hyresgästen ska teckna abonnemang i eget namn för de poster som anges ovan och svarar själv för dessa kostnader."
       : "",
 
-    noticeLandlord: describeNotice(ctx.noticePeriods.landlord),
+    noticeLandlordSentence: ctx.noticePeriods.landlord.unavailable
+      ? ctx.noticePeriods.landlord.unavailable.reason
+      : `Hyresvärden kan säga upp avtalet ${describeNotice(ctx.noticePeriods.landlord)}.`,
     noticeTenant: describeNotice(ctx.noticePeriods.tenant),
     noticeLegalBasis: ctx.noticePeriods.landlord.legalBasis,
     startDate: formatDate(a.startDate),
@@ -386,7 +388,7 @@ export const CLAUSES: ClauseDef[] = [
     condition: always,
     review: {},
     body:
-      "Hyresvärden kan säga upp avtalet {{noticeLandlord}}.\n" +
+      "{{noticeLandlordSentence}}\n" +
       "Hyresgästen kan säga upp avtalet {{noticeTenant}}.\n" +
       "Uppsägningstiderna följer {{noticeLegalBasis}}.",
   },

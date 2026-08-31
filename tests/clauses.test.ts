@@ -104,3 +104,35 @@ test("klausulerna numreras löpande och i stigande ordning", () => {
   const clauses = buildClauses(T1, resolveLegalContext(T1));
   clauses.forEach((c, i) => assert.equal(c.number, i + 1));
 });
+
+test("C-NOTICE blir en läsbar mening när hyresvärden saknar uppsägningsrätt", () => {
+  // Regression: mallen prefixade "Hyresvärden kan säga upp avtalet" och limmade
+  // på describeNotice(), vilket vid unavailable gav en självmotsägande mening
+  // med dubbel punkt.
+  const first = buildClauses(T10, resolveLegalContext(T10))
+    .find((c) => c.id === "C-NOTICE")!
+    .paragraphs[0];
+  assert.ok(!/kan säga upp avtalet Avtalet/.test(first), "hopklistrad mening");
+  assert.ok(!/\.\./.test(first), "dubbel punkt");
+  assert.match(first, /^Avtalet upphör vid hyrestidens slut\./);
+});
+
+test("C-NOTICE behåller den vanliga lydelsen när uppsägningsrätt finns", () => {
+  const first = buildClauses(T1, resolveLegalContext(T1))
+    .find((c) => c.id === "C-NOTICE")!
+    .paragraphs[0];
+  assert.match(first, /^Hyresvärden kan säga upp avtalet till det månadsskifte/);
+  assert.ok(!/\.\./.test(first));
+});
+
+test("hyresklausulen påstår inte att nyttighetslistan är uttömmande", () => {
+  // 2 kap. 1 § andra stycket säger "nyttigheter såsom …" — uppräkningen
+  // exemplifierar. Det som begränsar är förbrukningsrekvisitet.
+  const ctx = resolveLegalContext(T1);
+  assert.ok(
+    !/men inte för andra nyttigheter/.test(ctx.rentRule.principle),
+    "får inte påstå att listan är stängd"
+  );
+  assert.match(ctx.rentRule.principle, /förbrukning/);
+  assert.match(ctx.rentRule.principle, /skäligt belopp/);
+});

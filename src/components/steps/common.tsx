@@ -78,7 +78,9 @@ export function RegimeBox({ ctx }: { ctx: LegalContext }) {
         <div>
           <dt className="text-gray-500">Uppsägningstid, hyresvärd</dt>
           <dd className="font-medium text-gray-900">
-            {ctx.noticePeriods.landlord.months
+            {ctx.noticePeriods.landlord.unavailable
+              ? "ingen uppsägningsrätt"
+              : ctx.noticePeriods.landlord.months
               ? `${ctx.noticePeriods.landlord.months} mån`
               : ctx.noticePeriods.landlord.weeks
               ? `${ctx.noticePeriods.landlord.weeks} v`

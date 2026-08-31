@@ -127,12 +127,19 @@ påverkas inte, men den är fortfarande avstängd i väntan på granskning.
 
 Här har det tillkommit mer än det försvunnit.
 
-**Bestämd till beloppet, med en uttömmande lista på undantag** (2 kap. 1 § andra
-stycket): ersättning som motsvarar förbrukningen får avtalas för uppvärmning,
-nedkylning, varmvatten, el och avgifter för vatten och avlopp. Bredband, tv,
-tvättstuga och sopor står inte där. Påföljden vid avvikelse är enligt tredje stycket
-att hyran ska betalas med **ett skäligt belopp** — inte att villkoret bara stryks.
-Detta träffar dagens kostnadsuppdelning direkt.
+**Bestämd till beloppet, med en exemplifierande lista på undantag** (2 kap. 1 § andra
+stycket): ersättning som motsvarar förbrukningen får avtalas för "nyttigheter **såsom**
+kostnader för lägenhetens uppvärmning, nedkylning, förseende med varmvatten eller el
+eller avgifter för vatten och avlopp".
+
+*Rättelse (2026-08-31):* en tidigare lydelse av det här avsnittet kallade listan
+uttömmande och drog slutsatsen att bredband, tv, tvättstuga och sopor inte får
+debiteras efter förbrukning. Det är fel. Ordet **såsom** gör uppräkningen
+exemplifierande — jämför 12 kap. 19 § jordabalken, som räknar upp samma poster **utan**
+det ordet. Det som begränsar är **förbrukningsrekvisitet**: ersättningen ska motsvara
+kostnaden för förbrukningen, så en fast schablon för sådana poster är inte ett giltigt
+undantag. Påföljden vid avvikelse är enligt tredje stycket att hyran ska betalas med
+**ett skäligt belopp** — inte att villkoret bara stryks.
 
 **Indexklausuler är nu tillåtna** (2 kap. 4 §), vilket de inte var för bostäder
 tidigare. Villkoren: skriftligt meddelande till motparten, underlag på begäran, ny hyra
@@ -236,9 +243,21 @@ Steg 1–6 följer av lagtexten och är **genomförda**. Motorn avgör numera la
 saknar uppsägningsrätt vid bestämd tid enligt 6 kap. 1 §, och citerar 2 kap. för hyran.
 Testsviten är omskriven och gröna 61/61.
 
-Steg 7 — klausulernas brödtext — kräver jurist och är inte påbörjat. Klausulerna citerar nu
-rätt lag i sin `legalBasis`, men själva texterna är fortfarande skrivna mot den upphävda
-lagen och mot 12 kap. jordabalken. Granskningsgrinden i §12 hindrar dem från att renderas.
+Steg 7 — klausulernas brödtext — kräver jurist och är inte påbörjat.
+
+*Rättelse (2026-08-31):* en tidigare lydelse påstod här att "klausulerna citerar nu rätt
+lag i sin `legalBasis`". Det är en överdrift. Commiten ändrade **två** sådana rader.
+En adversariell granskning (`docs/granskning-ombyggnad.md`) fann att minst fem klausuler
+fortfarande citerar hyreslagen även när privatuthyrningslagen är tillämplig:
+`C-NOTICE-TENANT-STATUTORY` (12 kap. 5 §), `C-NOTICE-FORM` (12 kap. 8 §),
+`C-MAINTENANCE` (12 kap. 24 §), `C-SUBLET-BAN` (12 kap. 39 §) och `C-FORFEITURE`
+(12 kap. 42 §, som dessutom anger en veckas dröjsmålsfrist där 6 kap. 3 § 1 säger två).
+Deras `condition` är regimneutral. `TermStep.tsx` skriver dessutom hårdkodat
+"enligt 12 kap. 5 § jordabalken" i gränssnittet.
+
+Det här är en operativ risk, eftersom spärren i `service-status.ts` är tänkt att lyftas
+"i samma ändring som ombyggnaden". Ombyggnaden är inte klar förrän dessa klausuler är
+regimuppdelade. Granskningsgrinden i §12 hindrar dem från att renderas så länge den är på.
 
 ---
 

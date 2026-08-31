@@ -204,7 +204,7 @@ const PRIVATE_LANDLORD_FIXED: NoticePeriod = {
   legalBasis: "6 kap. 1 § privatuthyrningslagen (2026:772)",
   unavailable: {
     reason:
-      "Avtalet upphör vid hyrestidens slut. Hyresvärden kan inte säga upp ett tidsbestämt avtal i förtid, annat än på någon av grunderna i 6 kap. 3 §.",
+      "Avtalet upphör vid hyrestidens slut. Hyresvärden kan inte säga upp ett tidsbestämt avtal i förtid med ordinarie uppsägningstid, utan bara på någon av grunderna i 6 kap. 3 § eller i de konkursfall 7 kap. 3 § hänvisar till.",
   },
 };
 const JB_INDEFINITE: NoticePeriod = {
@@ -225,7 +225,7 @@ function jbFixedTermNotice(start: Date | null, end: Date | null): NoticePeriod {
 
 /**
  * Längre uppsägningstid får avtalas till hyresgästens fördel (1 kap. 4 § privatuthyrningslagen,
- * 12 kap. 1 § sjätte stycket JB). I praktiken betyder det att hyresvärdens
+ * 12 kap. 1 d § JB — 1 § delades upp genom SFS 2026:773). I praktiken betyder det att hyresvärdens
  * uppsägningstid kan förlängas — hyresgästens egen kan aldrig förlängas till
  * dennes nackdel, och ett sådant villkor lämnas därför utan avseende.
  */
@@ -344,8 +344,11 @@ function resolveRentRule(a: AnswerSet, regime: LegalRegime): RentRule {
     return {
       clauseId: "C-RENT-PRIVATE",
       principle:
-        "Hyran ska vara bestämd till beloppet. Ersättning som motsvarar förbrukningen får avtalas särskilt för uppvärmning, nedkylning, varmvatten, el och avgifter för vatten och avlopp — men inte för andra nyttigheter. Hyresgästen kan begära att hyresnämnden prövar hyran, som sätts ned om den är väsentligt högre än hyran för liknande lägenheter som hyrs ut enligt samma lag. Sänks hyran för förfluten tid ska hyresvärden betala tillbaka det överskjutande beloppet jämte ränta.",
+        "Hyran ska vara bestämd till beloppet. För nyttigheter såsom uppvärmning, nedkylning, varmvatten, el och avgifter för vatten och avlopp får det avtalas att ersättning i stället betalas med ett belopp som motsvarar den faktiska förbrukningen. Det som begränsar är att ersättningen ska svara mot förbrukningen — en fast schablon för sådana poster är alltså inte ett giltigt undantag från att hyran ska vara bestämd till beloppet. Är hyran inte bestämd till beloppet, eller strider överenskommelsen mot detta, ska hyran betalas med ett skäligt belopp. Hyresgästen kan begära att hyresnämnden prövar hyran, som sätts ned om den är väsentligt högre än hyran för liknande lägenheter som hyrs ut enligt samma lag. Sänks hyran för förfluten tid ska hyresvärden betala tillbaka det överskjutande beloppet jämte ränta.",
       legalBasis: "2 kap. 1, 5 och 6 §§ privatuthyrningslagen (2026:772)",
+      // 2 kap. 1 § andra stycket säger "nyttigheter såsom …". Ordet såsom gör
+      // uppräkningen exemplifierande; jämför 12 kap. 19 § JB som räknar upp
+      // samma poster utan det ordet. Skriv aldrig att listan är uttömmande.
     };
   }
   if (isSublet(a)) {
