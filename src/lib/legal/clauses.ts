@@ -663,6 +663,16 @@ export const CLAUSES: ClauseDef[] = [
       "Tvist med anledning av detta avtal prövas av hyresnämnden i den mån frågan hör till nämndens behörighet, och i övrigt av allmän domstol.",
   },
   {
+    id: "C-DISCLAIMER",
+    heading: "Om hur detta dokument har tagits fram",
+    order: 890,
+    condition: always,
+    review: {},
+    body:
+      "Detta avtal har genererats automatiskt utifrån de uppgifter parterna lämnat i ett webbformulär. Avtalstexten är maskinellt framtagen och maskinellt kontrollerad mot lagtext. Den har inte granskats av en verksam jurist.\n" +
+      "Parterna uppmanas att läsa igenom avtalet innan det undertecknas, och att låta en jurist eller hyresnämnden granska det vid osäkerhet. Tvingande bestämmelser gäller framför avtalets lydelse: ett villkor som är till hyresgästens nackdel jämfört med lagen är utan verkan mot hyresgästen, oavsett vad som står här.",
+  },
+  {
     id: "C-SIGNATURES",
     heading: "Underskrifter",
     order: 900,

@@ -36,6 +36,7 @@ test("T1 (privatuthyrningslagen) ger förväntad klausullista", () => {
     "C-SUBLET-BAN-PRIVATE",
     "C-FORFEITURE-PRIVATE",
     "C-DISPUTE",
+    "C-DISCLAIMER",
     "C-SIGNATURES",
   ]);
 });

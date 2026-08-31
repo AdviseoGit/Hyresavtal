@@ -60,7 +60,9 @@ export default function Home() {
           <>
             <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               <strong>Observera:</strong> Tjänsten skapar ett <strong>utkast</strong> till hyresavtal
-              och utgör inte juridisk rådgivning. Granska dokumentet innan det undertecknas. Läs mer i{" "}
+              och utgör inte juridisk rådgivning. Avtalstexten är{" "}
+              <strong>maskinellt framtagen och maskinellt kontrollerad mot lagtext</strong> — den är
+              inte granskad av en verksam jurist. Granska dokumentet innan det undertecknas. Läs mer i{" "}
               <Link href="/villkor" className="underline font-medium">
                 villkor &amp; ansvarsfriskrivning
               </Link>
