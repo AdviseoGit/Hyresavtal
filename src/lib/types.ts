@@ -22,7 +22,12 @@ export type LandlordTitle =
 
 export type Purpose = "permanent" | "leisure";
 
-export type PrivateRentalOrdinal = "first" | "additional";
+/**
+ * 1 kap. 1 § privatuthyrningslagen (2026:772) avgränsar lagen efter vem som hyr ut:
+ * en fysisk person eller ett dödsbo. Den gamla lagens avgränsning mot
+ * näringsverksamhet finns inte kvar.
+ */
+export type LandlordEntity = "natural_person" | "estate" | "legal_entity";
 
 /* ---------------------------------------------------------------- 5.2 */
 
@@ -117,9 +122,14 @@ export interface AnswerSet {
   /* 5.1 Grunduppgifter */
   propertyType: PropertyType | "";
   landlordTitle: LandlordTitle | "";
-  landlordIsBusiness: boolean | null;
+  landlordEntity: LandlordEntity | "";
   purpose: Purpose | "";
-  privateRentalOrdinal: PrivateRentalOrdinal | "";
+  /**
+   * 1 kap. 3 § första stycket 1: lagen gäller inte om hyresvärden regelmässigt hyr
+   * ut fler än två lägenheter som inte utgör del av hyresvärdens bostad. Ersätter
+   * den upphävda lagens fråga om upplåtelsen var den första i ordningen.
+   */
+  landlordRentsMoreThanTwo: boolean | null;
 
   /* 5.2 Samtycke och tillstånd */
   boardConsentObtained: ConsentStatus | "";
@@ -238,9 +248,9 @@ export function createEmptyAnswerSet(): AnswerSet {
   return {
     propertyType: "",
     landlordTitle: "",
-    landlordIsBusiness: null,
+    landlordEntity: "",
     purpose: "",
-    privateRentalOrdinal: "",
+    landlordRentsMoreThanTwo: null,
 
     boardConsentObtained: "",
     boardConsentDate: "",

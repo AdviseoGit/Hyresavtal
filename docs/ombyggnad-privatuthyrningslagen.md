@@ -1,6 +1,7 @@
 # Ombyggnad till privatuthyrningslagen (2026:772)
 
-**Status:** underlag för beslut och implementation. Ingen kod är ändrad utifrån detta ännu.
+**Status:** steg 1–6 nedan är genomförda 2026-08-31 (motorn, datamodellen och testerna).
+Steg 7 — klausultexterna — återstår och kräver jurist. Generatorn är fortsatt pausad.
 **Källa:** SFS 2026:772 i dess lydelse på riksdagen.se, hämtad 2026-08-31, samt 12 kap.
 jordabalken i lydelse enligt SFS 2026:773.
 **Föranleds av:** `docs/juristgranskning.md` fynd A1/F47.
@@ -230,7 +231,14 @@ Dagens vårdpliktsklausul bygger på 12 kap. 24 § jordabalken.
 8. **Testsviten.** Acceptanskriterierna i SPEC §13 (T1–T10) utgår från den gamla lagen
    och måste skrivas om innan de kan användas som grind.
 
-Steg 1–6 följer av lagtexten. Steg 7 kräver jurist.
+Steg 1–6 följer av lagtexten och är **genomförda**. Motorn avgör numera lagvalet enligt
+1 kap. 1 och 3 §§, ger tre månader åt båda parter enligt 6 kap. 2 §, markerar att hyresvärden
+saknar uppsägningsrätt vid bestämd tid enligt 6 kap. 1 §, och citerar 2 kap. för hyran.
+Testsviten är omskriven och gröna 61/61.
+
+Steg 7 — klausulernas brödtext — kräver jurist och är inte påbörjat. Klausulerna citerar nu
+rätt lag i sin `legalBasis`, men själva texterna är fortfarande skrivna mot den upphävda
+lagen och mot 12 kap. jordabalken. Granskningsgrinden i §12 hindrar dem från att renderas.
 
 ---
 

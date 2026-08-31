@@ -322,7 +322,7 @@ export const CLAUSES: ClauseDef[] = [
     heading: "Tillämplig lag",
     order: 50,
     condition: always,
-    legalBasis: "1 § lagen (2012:978) om uthyrning av egen bostad samt 12 kap. jordabalken",
+    legalBasis: "1 kap. 1 och 3 §§ privatuthyrningslagen (2026:772) samt 12 kap. jordabalken",
     review: {},
     body:
       "På detta avtal tillämpas {{regimeName}}. {{regimeExplanation}}\n" +
@@ -434,7 +434,7 @@ export const CLAUSES: ClauseDef[] = [
     id: "C-RENT-PRIVATE",
     heading: "Hyra",
     order: 90,
-    legalBasis: "4 § lagen (2012:978) om uthyrning av egen bostad",
+    legalBasis: "2 kap. 1, 5 och 6 §§ privatuthyrningslagen (2026:772)",
     condition: (_a, ctx) => ctx.rentRule.clauseId === "C-RENT-PRIVATE",
     review: {},
     body:

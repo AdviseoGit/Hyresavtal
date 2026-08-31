@@ -47,10 +47,11 @@ async function textFor(a: typeof T1): Promise<string> {
   return extractPdfText(await generateCompletePdf(a, resolveLegalContext(a)));
 }
 
-test("T1: dokumentet anger lagen om uthyrning av egen bostad och en månads uppsägningstid", async () => {
+test("T1: dokumentet anger privatuthyrningslagen och tre månaders uppsägningstid", async () => {
   const text = await textFor(T1);
-  assert.match(text, /lagen \(2012:978\)/);
-  assert.match(text, /tidigast en m/);
+  assert.match(text, /privatuthyrningslagen \(2026:772\)/);
+  assert.match(text, /tidigast 3 m/);
+  assert.ok(!/2012:978/.test(text), "den upphävda lagen ska inte förekomma");
   assert.ok(!/12 kap\. 4 §/.test(text), "JB-uppsägningstiden ska inte förekomma");
 });
 

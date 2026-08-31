@@ -5,16 +5,18 @@ import { RegimeBox, StepIntro, type StepProps } from "./common";
 
 /** Steg 1 — här avgörs lagvalet (§4.1, §7). */
 export default function BasicsStep({ ctl, a, ctx }: StepProps) {
-  const showOrdinal =
-    a.landlordIsBusiness === false &&
+  // 1 kap. 3 § första stycket 1 prövas bara när lagen annars skulle kunna gälla:
+  // hyresvärden är fysisk person eller dödsbo och innehar inte med hyresrätt.
+  const showRentsMoreThanTwo =
+    (a.landlordEntity === "natural_person" || a.landlordEntity === "estate") &&
     (a.landlordTitle === "owner_freehold" || a.landlordTitle === "condominium");
 
   const answeredAll =
     a.propertyType !== "" &&
     a.landlordTitle !== "" &&
-    a.landlordIsBusiness !== null &&
+    a.landlordEntity !== "" &&
     a.purpose !== "" &&
-    (!showOrdinal || a.privateRentalOrdinal !== "");
+    (!showRentsMoreThanTwo || a.landlordRentsMoreThanTwo !== null);
 
   return (
     <div className="space-y-6">
@@ -49,14 +51,21 @@ export default function BasicsStep({ ctl, a, ctx }: StepProps) {
         ]}
       />
 
-      <BooleanField
+      <RadioField
         ctl={ctl}
-        name="landlordIsBusiness"
-        label="Hyr du ut inom ramen för näringsverksamhet?"
+        name="landlordEntity"
+        label="Vem är hyresvärd i avtalet?"
         required
-        hint="Med näringsverksamhet menas yrkesmässig uthyrning, t.ex. som fastighetsbolag eller med flera bostäder i uthyrningsverksamhet."
-        yesLabel="Ja, uthyrningen sker i näringsverksamhet"
-        noLabel="Nej, jag hyr ut privat"
+        hint="Privatuthyrningslagen gäller bara när en fysisk person eller ett dödsbo hyr ut (1 kap. 1 §)."
+        options={[
+          { value: "natural_person", label: "En privatperson", description: "Du hyr ut i eget namn" },
+          { value: "estate", label: "Ett dödsbo" },
+          {
+            value: "legal_entity",
+            label: "Ett företag eller en annan juridisk person",
+            description: "Aktiebolag, handelsbolag, förening eller stiftelse",
+          },
+        ]}
       />
 
       <RadioField
@@ -70,17 +79,15 @@ export default function BasicsStep({ ctl, a, ctx }: StepProps) {
         ]}
       />
 
-      {showOrdinal && (
-        <RadioField
+      {showRentsMoreThanTwo && (
+        <BooleanField
           ctl={ctl}
-          name="privateRentalOrdinal"
-          label="Hyr du ut fler än en bostad privat just nu?"
+          name="landlordRentsMoreThanTwo"
+          label="Hyr du regelmässigt ut fler än två bostäder som inte är del av din egen bostad?"
           required
-          hint="Lagen om uthyrning av egen bostad gäller bara den första upplåtelsen."
-          options={[
-            { value: "first", label: "Nej, detta är den enda bostaden jag hyr ut" },
-            { value: "additional", label: "Ja, jag hyr redan ut en annan bostad privat" },
-          ]}
+          hint="Privatuthyrningslagen gäller inte den som regelmässigt hyr ut fler än två lägenheter som inte utgör del av den egna bostaden (1 kap. 3 § första stycket 1). Rum i din egen bostad räknas inte in."
+          yesLabel="Ja, fler än två"
+          noLabel="Nej, högst två"
         />
       )}
 

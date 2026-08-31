@@ -8,7 +8,7 @@
 
 import type { AnswerSet } from "../types";
 
-export type LegalRegime = "PRIVATE_2012_978" | "JB12";
+export type LegalRegime = "PRIVATE_2026_772" | "JB12";
 
 export interface NoticePeriod {
   months?: number;
@@ -17,6 +17,12 @@ export interface NoticePeriod {
   /** true = uppsägning sker till månadsskifte, false = rakt antal i förväg */
   toMonthEnd: boolean;
   legalBasis: string;
+  /**
+   * Satt när parten saknar rätt till ordinarie uppsägning. Under
+   * privatuthyrningslagen får hyresvärden inte säga upp ett tidsbestämt avtal i
+   * förtid; 6 kap. 1 § andra stycket ger den rätten bara åt hyresgästen.
+   */
+  unavailable?: { reason: string };
 }
 
 export type SecurityOfTenure =
@@ -109,19 +115,29 @@ export interface RegimeDecision {
 }
 
 /**
- * 1 § lagen (2012:978): lagen gäller när någon utanför näringsverksamhet upplåter
- * en bostadslägenhet för annat än fritidsändamål. Den gäller inte upplåtelse av
- * hyresrätt i andra hand, och vid fler än en upplåtelse gäller den bara den första.
+ * Tillämpningsområdet enligt privatuthyrningslagen (2026:772).
+ *
+ * 1 kap. 1 §: lagen gäller avtal genom vilka en fysisk person eller ett dödsbo mot
+ * ersättning upplåter hus eller del av hus, om lägenheten upplåtits för att helt
+ * eller till inte oväsentlig del användas som bostad.
+ *
+ * 1 kap. 3 § första stycket undantar tre fall: hyresvärden hyr regelmässigt ut fler
+ * än två lägenheter som inte utgör del av hyresvärdens bostad (p. 1), hyresvärden
+ * innehar lägenheten med hyresrätt (p. 2), eller upplåtelsen avser fritidsändamål
+ * (p. 3). Faller avtalet utanför lagen gäller 12 kap. jordabalken.
+ *
+ * Den upphävda lagens regel om att endast den första upplåtelsen omfattades finns
+ * inte kvar och har därför ingen motsvarighet här.
  *
  * Utvärderas i ordning — första träff vinner.
  */
 export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
-  if (a.landlordIsBusiness === true) {
+  if (a.landlordEntity === "legal_entity") {
     return {
       regime: "JB12",
       rule: 1,
       reason:
-        "Uthyrningen sker inom ramen för näringsverksamhet. Lagen om uthyrning av egen bostad är då inte tillämplig.",
+        "Hyresvärden är en juridisk person. Privatuthyrningslagen gäller bara när en fysisk person eller ett dödsbo hyr ut.",
     };
   }
   if (a.landlordTitle === "first_hand_lease" || a.landlordTitle === "second_hand") {
@@ -129,7 +145,7 @@ export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
       regime: "JB12",
       rule: 2,
       reason:
-        "Upplåtelsen avser en hyresrätt i andra (eller tredje) hand. Lagen om uthyrning av egen bostad gäller inte sådana upplåtelser.",
+        "Hyresvärden innehar lägenheten med hyresrätt. Privatuthyrningslagen gäller inte sådana upplåtelser.",
     };
   }
   if (a.purpose === "leisure") {
@@ -137,22 +153,22 @@ export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
       regime: "JB12",
       rule: 3,
       reason:
-        "Bostaden upplåts för fritidsändamål. Lagen om uthyrning av egen bostad gäller bara upplåtelser för annat än fritidsändamål.",
+        "Upplåtelsen avser fritidsändamål. Privatuthyrningslagen gäller inte sådana upplåtelser.",
     };
   }
-  if (a.privateRentalOrdinal === "additional") {
+  if (a.landlordRentsMoreThanTwo === true) {
     return {
       regime: "JB12",
       rule: 4,
       reason:
-        "Detta är inte den första bostaden du hyr ut privat. Lagen om uthyrning av egen bostad gäller bara den första upplåtelsen.",
+        "Hyresvärden hyr regelmässigt ut fler än två lägenheter som inte utgör del av den egna bostaden. Privatuthyrningslagen gäller då inte.",
     };
   }
   return {
-    regime: "PRIVATE_2012_978",
+    regime: "PRIVATE_2026_772",
     rule: 5,
     reason:
-      "Du upplåter din egen bostad privat, för permanentboende, och detta är den första sådana upplåtelsen.",
+      "En fysisk person eller ett dödsbo hyr ut en bostad för permanentboende, utanför undantagen i 1 kap. 3 §. Privatuthyrningslagen gäller.",
   };
 }
 
@@ -162,15 +178,34 @@ export function resolveLegalRegime(a: AnswerSet): LegalRegime {
 
 /* ------------------------------------------------- 4.3 uppsägningstider */
 
+/** 6 kap. 2 §: tre månader för båda parter vid avtal som gäller tills vidare. */
 const PRIVATE_TENANT: NoticePeriod = {
-  months: 1,
+  months: 3,
   toMonthEnd: true,
-  legalBasis: "3 § lagen (2012:978) om uthyrning av egen bostad",
+  legalBasis: "6 kap. 2 § privatuthyrningslagen (2026:772)",
 };
 const PRIVATE_LANDLORD: NoticePeriod = {
   months: 3,
   toMonthEnd: true,
-  legalBasis: "3 § lagen (2012:978) om uthyrning av egen bostad",
+  legalBasis: "6 kap. 2 § privatuthyrningslagen (2026:772)",
+};
+/** 6 kap. 1 § andra stycket: hyresgästen får alltid säga upp med tre månader. */
+const PRIVATE_TENANT_FIXED: NoticePeriod = {
+  months: 3,
+  toMonthEnd: true,
+  legalBasis: "6 kap. 1 § andra stycket privatuthyrningslagen (2026:772)",
+};
+/**
+ * 6 kap. 1 §: avtalet upphör vid hyrestidens slut. Hyresvärden har ingen
+ * motsvarande rätt att säga upp i förtid — endast grunderna i 6 kap. 3 §.
+ */
+const PRIVATE_LANDLORD_FIXED: NoticePeriod = {
+  toMonthEnd: false,
+  legalBasis: "6 kap. 1 § privatuthyrningslagen (2026:772)",
+  unavailable: {
+    reason:
+      "Avtalet upphör vid hyrestidens slut. Hyresvärden kan inte säga upp ett tidsbestämt avtal i förtid, annat än på någon av grunderna i 6 kap. 3 §.",
+  },
 };
 const JB_INDEFINITE: NoticePeriod = {
   months: 3,
@@ -189,7 +224,7 @@ function jbFixedTermNotice(start: Date | null, end: Date | null): NoticePeriod {
 }
 
 /**
- * Längre uppsägningstid får avtalas till hyresgästens fördel (2 § lagen 2012:978,
+ * Längre uppsägningstid får avtalas till hyresgästens fördel (1 kap. 4 § privatuthyrningslagen,
  * 12 kap. 1 § sjätte stycket JB). I praktiken betyder det att hyresvärdens
  * uppsägningstid kan förlängas — hyresgästens egen kan aldrig förlängas till
  * dennes nackdel, och ett sådant villkor lämnas därför utan avseende.
@@ -206,12 +241,19 @@ export function resolveNoticePeriods(
   const start = parseDate(a.startDate);
   const end = parseDate(a.endDate);
 
-  if (regime === "PRIVATE_2012_978") {
-    // 3 § gäller både tillsvidare och bestämd tid — båda parter får säga upp i förtid.
+  if (regime === "PRIVATE_2026_772") {
+    if (a.contractType === "fixed") {
+      // 6 kap. 1 §: avtalet löper ut av sig självt. Bara hyresgästen kan säga upp.
+      return {
+        landlord: PRIVATE_LANDLORD_FIXED,
+        tenant: PRIVATE_TENANT_FIXED,
+        tenantStatutoryThreeMonths: true,
+      };
+    }
     return {
       landlord: applyExtendedNotice(PRIVATE_LANDLORD, a.noticeExtendedTenant),
       tenant: PRIVATE_TENANT,
-      tenantStatutoryThreeMonths: false,
+      tenantStatutoryThreeMonths: true,
     };
   }
 
@@ -249,12 +291,16 @@ export function resolveSecurityOfTenure(
   a: AnswerSet,
   regime: LegalRegime
 ): SecurityOfTenure {
-  if (regime === "PRIVATE_2012_978") {
+  if (regime === "PRIVATE_2026_772") {
+    // Privatuthyrningslagen innehåller ingen bestämmelse om förlängning, och
+    // 12 kap. jordabalken med sitt besittningsskydd är undantaget enligt
+    // 12 kap. 1 c § JB. Ingen förlängningsrätt finns därför att åberopa.
     return {
       status: "none",
       reason:
-        "Hyresgästen har inte rätt till förlängning av avtalet när lagen om uthyrning av egen bostad gäller.",
-      legalBasis: "3 a § lagen (2012:978) om uthyrning av egen bostad",
+        "Privatuthyrningslagen ger ingen rätt till förlängning av avtalet, och hyreslagens besittningsskydd gäller inte för sådana upplåtelser.",
+      legalBasis:
+        "privatuthyrningslagen (2026:772) jämförd med 12 kap. 1 c § jordabalken",
     };
   }
   if (a.propertyType === "room_in_own_home") {
@@ -294,12 +340,12 @@ export function resolveSecurityOfTenure(
 /* ------------------------------------------------------- 4.5 hyressättning */
 
 function resolveRentRule(a: AnswerSet, regime: LegalRegime): RentRule {
-  if (regime === "PRIVATE_2012_978") {
+  if (regime === "PRIVATE_2026_772") {
     return {
       clauseId: "C-RENT-PRIVATE",
       principle:
-        "Hyran är kostnadsbaserad. Den får inte påtagligt överstiga summan av kapitalkostnaden — en skälig avkastningsränta på bostadens marknadsvärde — och driftskostnaderna. Hyresnämnden kan sätta ned hyran för tiden framåt, men beslutar inte om återbetalning av redan betald hyra.",
-      legalBasis: "4 § lagen (2012:978) om uthyrning av egen bostad",
+        "Hyran ska vara bestämd till beloppet. Ersättning som motsvarar förbrukningen får avtalas särskilt för uppvärmning, nedkylning, varmvatten, el och avgifter för vatten och avlopp — men inte för andra nyttigheter. Hyresgästen kan begära att hyresnämnden prövar hyran, som sätts ned om den är väsentligt högre än hyran för liknande lägenheter som hyrs ut enligt samma lag. Sänks hyran för förfluten tid ska hyresvärden betala tillbaka det överskjutande beloppet jämte ränta.",
+      legalBasis: "2 kap. 1, 5 och 6 §§ privatuthyrningslagen (2026:772)",
     };
   }
   if (isSublet(a)) {
@@ -418,10 +464,10 @@ function resolveWarnings(
 /* ------------------------------------------------------------- fasadfunktion */
 
 const REGIME_META: Record<LegalRegime, Pick<LegalContext, "regimeName" | "regimeShortName" | "regimeLegalBasis">> = {
-  PRIVATE_2012_978: {
-    regimeName: "lagen (2012:978) om uthyrning av egen bostad",
-    regimeShortName: "Lagen om uthyrning av egen bostad",
-    regimeLegalBasis: "lagen (2012:978) om uthyrning av egen bostad",
+  PRIVATE_2026_772: {
+    regimeName: "privatuthyrningslagen (2026:772)",
+    regimeShortName: "Privatuthyrningslagen",
+    regimeLegalBasis: "privatuthyrningslagen (2026:772)",
   },
   JB12: {
     regimeName: "12 kap. jordabalken (hyreslagen)",
@@ -463,6 +509,7 @@ export function resolveLegalContext(a: AnswerSet): LegalContext {
 /* ------------------------------------------------------------ presentation */
 
 export function describeNotice(n: NoticePeriod): string {
+  if (n.unavailable) return n.unavailable.reason;
   const amount =
     n.months !== undefined
       ? n.months === 1

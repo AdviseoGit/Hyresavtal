@@ -35,7 +35,7 @@ export default function Villkor() {
         <p>
           Tjänsten är ett digitalt verktyg som hjälper dig att snabbt ta fram ett{" "}
           <strong>utkast till hyresavtal</strong> för bostad. Tjänsten avgör utifrån dina svar
-          om lagen (2012:978) om uthyrning av egen bostad eller 12 kap. jordabalken (hyreslagen)
+          om privatuthyrningslagen (2026:772) eller 12 kap. jordabalken (hyreslagen)
           är tillämplig, och bygger utkastet på den lagen samt vanligt förekommande
           standardvillkor. Tjänsten är <strong>inte</strong> en juristbyrå, lämnar{" "}
           <strong>inte</strong> juridisk rådgivning, och är <strong>inte</strong> part i det
@@ -62,7 +62,7 @@ export default function Villkor() {
 
         <H>4. Tvingande lagstiftning gäller alltid</H>
         <p>
-          Stora delar av hyreslagen och lagen om uthyrning av egen bostad är tvingande till
+          Stora delar av hyreslagen och privatuthyrningslagen är tvingande till
           hyresgästens förmån. Ett avtalsvillkor
           som är mindre förmånligt för hyresgästen än lagen är utan verkan, oavsett vad som
           står i dokumentet. Tjänsten kan inte garantera att ett enskilt villkor är giltigt

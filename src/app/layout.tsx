@@ -4,18 +4,18 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Skapa hyresavtal – rätt lag för din uthyrning",
   description:
-    "Skapa ett hyresavtal för bostad som utgår från rätt lag: lagen om uthyrning av egen bostad eller hyreslagen. Guidat flöde, korrekta uppsägningstider och gratis PDF.",
+    "Skapa ett hyresavtal för bostad som utgår från rätt lag: privatuthyrningslagen eller hyreslagen. Guidat flöde, korrekta uppsägningstider och gratis PDF.",
   keywords: [
     "hyresavtal",
     "hyreskontrakt",
     "hyresavtal mall",
     "andrahandsuthyrning avtal",
-    "uthyrning av egen bostad",
+    "privatuthyrningslagen",
   ],
   openGraph: {
     title: "Skapa hyresavtal – rätt lag för din uthyrning",
     description:
-      "Guidat flöde som avgör om lagen om uthyrning av egen bostad eller hyreslagen gäller, och skapar avtalet därefter. Gratis PDF.",
+      "Guidat flöde som avgör om privatuthyrningslagen eller hyreslagen gäller, och skapar avtalet därefter. Gratis PDF.",
     type: "website",
   },
 };

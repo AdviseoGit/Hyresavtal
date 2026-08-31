@@ -83,8 +83,8 @@ test("belopp ska vara heltal inom intervallet", () => {
 });
 
 test("stegvalidering: tomt formulär ger fel på grundfrågorna", () => {
-  const e = validateStep("basics", base({ propertyType: "", landlordTitle: "", purpose: "", landlordIsBusiness: null }));
-  assert.ok(e.propertyType && e.landlordTitle && e.purpose && e.landlordIsBusiness);
+  const e = validateStep("basics", base({ propertyType: "", landlordTitle: "", purpose: "", landlordEntity: "" }));
+  assert.ok(e.propertyType && e.landlordTitle && e.purpose && e.landlordEntity);
 });
 
 test("B3: bestämd tid kräver slutdatum efter tillträdesdagen", () => {

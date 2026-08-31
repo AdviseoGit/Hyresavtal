@@ -12,7 +12,7 @@ function ids(a: Parameters<typeof resolveLegalContext>[0]): string[] {
   return buildClauses(a, resolveLegalContext(a)).map((c) => c.id);
 }
 
-test("T1 (lagen om uthyrning av egen bostad) ger förväntad klausullista", () => {
+test("T1 (privatuthyrningslagen) ger förväntad klausullista", () => {
   assert.deepEqual(ids(T1), [
     "C-PARTIES",
     "C-OBJECT",
@@ -20,6 +20,7 @@ test("T1 (lagen om uthyrning av egen bostad) ger förväntad klausullista", () =
     "C-CONSENT-GIVEN",
     "C-TERM-INDEFINITE",
     "C-NOTICE",
+    "C-NOTICE-TENANT-STATUTORY",
     "C-NOTICE-FORM",
     "C-TENURE-NONE",
     "C-RENT-PRIVATE",
@@ -80,8 +81,10 @@ test("uppsägningstexten skiljer sig mellan T1 och T3 — hela poängen med omby
       .paragraphs.join(" ");
   const t1 = notice(T1);
   const t3 = notice(T3);
-  assert.match(t1, /tidigast en månad/);
-  assert.match(t1, /lagen \(2012:978\)/);
+  // Siffran är densamma i båda regimerna sedan 1 juli 2026; det som skiljer
+  // är vilken lag texten vilar på.
+  assert.match(t1, /privatuthyrningslagen/);
+  assert.ok(!/2012:978/.test(t1), "den upphävda lagen ska inte förekomma");
   assert.match(t3, /12 kap\. 4 §/);
   assert.notEqual(t1, t3);
 });

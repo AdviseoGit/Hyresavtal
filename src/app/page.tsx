@@ -26,7 +26,7 @@ export default function Home() {
         {!PAUSED && (
           <>
             <p className="mt-4 text-gray-600 max-w-xl mx-auto">
-              Hyr du ut din egen bostad gäller ofta lagen om uthyrning av egen bostad — inte
+              Hyr du ut din egen bostad gäller ofta privatuthyrningslagen — inte
               hyreslagen. Skillnaden avgör uppsägningstid, besittningsskydd och hur hyran får sättas.
               Svara på några frågor så bygger vi avtalet därefter.
             </p>

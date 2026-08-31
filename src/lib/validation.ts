@@ -186,13 +186,17 @@ export function validateStep(step: StepId, a: AnswerSet): Errors {
     case "basics":
       put(e, "propertyType", req(a.propertyType, "Välj vad du hyr ut."));
       put(e, "landlordTitle", req(a.landlordTitle, "Välj hur du förfogar över bostaden."));
-      put(e, "landlordIsBusiness", a.landlordIsBusiness === null ? "Välj ett alternativ." : null);
+      put(e, "landlordEntity", req(a.landlordEntity, "Välj vem som är hyresvärd."));
       put(e, "purpose", req(a.purpose, "Välj vad bostaden ska användas till."));
       if (
-        a.landlordIsBusiness === false &&
+        (a.landlordEntity === "natural_person" || a.landlordEntity === "estate") &&
         (a.landlordTitle === "owner_freehold" || a.landlordTitle === "condominium")
       ) {
-        put(e, "privateRentalOrdinal", req(a.privateRentalOrdinal, "Välj ett alternativ."));
+        put(
+          e,
+          "landlordRentsMoreThanTwo",
+          a.landlordRentsMoreThanTwo === null ? "Välj ett alternativ." : ""
+        );
       }
       break;
 

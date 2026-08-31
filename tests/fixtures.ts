@@ -11,9 +11,9 @@ export function base(overrides: Partial<AnswerSet> = {}): AnswerSet {
   return answers({
     propertyType: "apartment",
     landlordTitle: "condominium",
-    landlordIsBusiness: false,
+    landlordEntity: "natural_person",
     purpose: "permanent",
-    privateRentalOrdinal: "first",
+    landlordRentsMoreThanTwo: false,
     boardConsentObtained: "yes",
     landlordName: "Anna Andersson",
     landlordIdNumber: "19850101-0014",
@@ -54,7 +54,7 @@ export function base(overrides: Partial<AnswerSet> = {}): AnswerSet {
 
 export const T1 = base();
 
-export const T2 = base({ privateRentalOrdinal: "additional" });
+export const T2 = base({ landlordRentsMoreThanTwo: true });
 
 export const T3 = base({
   landlordTitle: "first_hand_lease",
@@ -71,7 +71,7 @@ export const T4 = base({
 export const T5 = base({
   propertyType: "house",
   landlordTitle: "owner_freehold",
-  landlordIsBusiness: true,
+  landlordEntity: "legal_entity",
 });
 
 export const T6 = base({
