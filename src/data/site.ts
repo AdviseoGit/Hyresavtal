@@ -5,6 +5,13 @@
  * och inte enbart i miljön. Miljövariabler går före när de är satta, så en
  * uppgift kan bytas utan kodändring. Saknade värden visas som uppenbara luckor
  * i stället för att tyst utelämnas.
+ *
+ * RÄTTA INTE "Adivseo" till "Adviseo". Bolaget heter Adivseo AB rent legalt.
+ * Stavningen avviker från domänen adviseo.se och ser ut som ett skrivfel, men
+ * är verifierad mot EU-kommissionens VIES-register 2026-08-31 på org.nr
+ * 559312-5437, som svarar "Adivseo AB", GUSTAVSGATAN 23, 431 66 MÖLNDAL.
+ * Namn och adress nedan är alltså de registrerade uppgifterna, och det är de
+ * som ska stå eftersom §11 pekar ut personuppgiftsansvarig.
  */
 
 export const SITE = {
