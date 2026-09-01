@@ -66,23 +66,37 @@ Rapporterna ligger i `docs/juristgranskning.md`, `docs/atgardslista.md` och
 
 ## Kända kvarvarande fynd
 
-De fyra höga fynden från pass 3 är åtgärdade. **Arton fynd av grad medel och
-låg är inte åtgärdade** vid lanseringen. Bland dem:
+*Uppdaterat 2026-09-01.* Vid lanseringen den 31 augusti stod arton fynd av grad
+medel och låg oåtgärdade. De är nu avbetade i commit `7dbc824` — F9, F10, F11,
+F12, F13, F14, F15, F18, F19, F20, F21 och F22 — tillsammans med de fyra höga
+som åtgärdades före lanseringen.
 
-- Tomt formulär ger regimen `PRIVATE_2026_772` med en positiv motivering som
-  skrivs in i avtalet.
-- `holiday_home` utlöser fritidsundantaget ensamt, utan att `purpose` prövas.
-- Ett hyresbelopp om 0 kr godtas, trots att 1 kap. 1 § kräver upplåtelse "mot
-  ersättning".
-- 1 kap. 3 § andra stycket (undantagets bestående verkan) är inte modellerat.
-- Nio namngivna luckor i testsviten.
+**Ett fynd lämnas medvetet oåtgärdat:**
 
-Se `docs/granskning-ombyggnad.md` för fullständig förteckning.
+- **F16** — 1 kap. 2 § (jord som upplåts tillsammans med lägenheten). Ska jorden
+  användas för jordbruk faller avtalet utanför båda regimerna och är i stället
+  ett arrende. Formuläret har ingen fråga som fångar det. Bedömningen är att en
+  jordbruksfråga i en bostadsuthyrningstjänst är oproportionerlig mot
+  sannolikheten. Kvarstår som känd begränsning.
+
+**Två frågor är hänskjutna till jurist och kan inte avgöras ur lagtexten:**
+
+- Var gränsen går för "ett möblerat rum" i 12 kap. 45 § första stycket 2. Koden
+  likställde tidigare varje möblerad enrumslägenhet med ett möblerat rum, vilket
+  saknar stöd i ordalydelsen. Grunden tillämpas nu inte alls, vilket är den
+  tolkning som gynnar hyresgästen.
+- Om ett avtal som vid ingåendet omfattas av privatuthyrningslagen kan falla ur
+  den när hyresvärdens innehav växer. 1 kap. 3 § andra stycket reglerar bara
+  undantagens bestående verkan, inte det omvända. Avtalet upplyser numera om att
+  lagvalet utgår från förhållandena vid ingåendet.
+
+Se `docs/granskning-ombyggnad.md` § 4 för den fullständiga förteckningen över
+frågor som kräver mänskligt ställningstagande.
 
 ## Observation om felfrekvensen
 
 Värd att notera för den som senare läser det här: antalet fynd hade inte planat
-ut när lanseringsbeslutet fattades. Pass 1 missade att den tillämpliga lagen var
+ut när lanseringsbeslutet fattades den 31 augusti. Pass 1 missade att den tillämpliga lagen var
 upphävd. Pass 3 fann två fel i kod som pass 2 hade passerat. Ytterligare pass
 kan förväntas hitta mer.
 
