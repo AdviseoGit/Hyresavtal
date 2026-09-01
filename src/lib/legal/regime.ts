@@ -6,7 +6,7 @@
  * Ändras något här ska tests/regime.test.ts (T1-T10) uppdateras först.
  */
 
-import type { AnswerSet } from "../types";
+import { totalRent, type AnswerSet } from "../types";
 
 export type LegalRegime = "PRIVATE_2026_772" | "JB12";
 
@@ -52,6 +52,8 @@ export interface LegalContext {
   regimeShortName: string;
   regimeLegalBasis: string;
   regimeExplanation: string;
+  /** Sant tills grundfrågorna är besvarade — lagvalet får då inte påstås. */
+  regimePending: boolean;
   noticePeriods: {
     landlord: NoticePeriod;
     tenant: NoticePeriod;
@@ -112,6 +114,19 @@ export interface RegimeDecision {
   /** vilken rad i beslutstabellen som träffade — används i test och UI */
   rule: 1 | 2 | 3 | 4 | 5;
   reason: string;
+  /**
+   * Sant när grundfrågorna ännu inte är besvarade. 1 kap. 1 § är ett positivt
+   * tillämpningsvillkor, inte en presumtion — frånvaron av ett diskvalificerande
+   * svar betyder inte att lagen gäller. `regime` innehåller då den regim som
+   * *skulle* gälla om resten lämnas obesvarad, men `reason` säger att frågan är
+   * öppen och får inte presenteras som ett konstaterande.
+   */
+  pending: boolean;
+}
+
+/** Grundfrågor som måste vara besvarade innan lagvalet kan påstås. */
+function regimeQuestionsAnswered(a: AnswerSet): boolean {
+  return a.landlordEntity !== "" && a.landlordTitle !== "" && a.purpose !== "";
 }
 
 /**
@@ -136,6 +151,7 @@ export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
     return {
       regime: "JB12",
       rule: 1,
+      pending: false,
       reason:
         "Hyresvärden är en juridisk person. Privatuthyrningslagen gäller bara när en fysisk person eller ett dödsbo hyr ut.",
     };
@@ -144,6 +160,7 @@ export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
     return {
       regime: "JB12",
       rule: 2,
+      pending: false,
       reason:
         "Hyresvärden innehar lägenheten med hyresrätt. Privatuthyrningslagen gäller inte sådana upplåtelser.",
     };
@@ -152,6 +169,7 @@ export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
     return {
       regime: "JB12",
       rule: 3,
+      pending: false,
       reason:
         "Upplåtelsen avser fritidsändamål. Privatuthyrningslagen gäller inte sådana upplåtelser.",
     };
@@ -160,13 +178,24 @@ export function resolveRegimeDecision(a: AnswerSet): RegimeDecision {
     return {
       regime: "JB12",
       rule: 4,
+      pending: false,
       reason:
         "Hyresvärden hyr regelmässigt ut fler än två lägenheter som inte utgör del av den egna bostaden. Privatuthyrningslagen gäller då inte.",
+    };
+  }
+  if (!regimeQuestionsAnswered(a)) {
+    return {
+      regime: "PRIVATE_2026_772",
+      rule: 5,
+      pending: true,
+      reason:
+        "Lagvalet är ännu inte avgjort. Svara på frågorna om vem som hyr ut, hur du förfogar över bostaden och vad den ska användas till.",
     };
   }
   return {
     regime: "PRIVATE_2026_772",
     rule: 5,
+    pending: false,
     reason:
       "En fysisk person eller ett dödsbo hyr ut en bostad för permanentboende, utanför undantagen i 1 kap. 3 §. Privatuthyrningslagen gäller.",
   };
@@ -229,9 +258,24 @@ function jbFixedTermNotice(start: Date | null, end: Date | null): NoticePeriod {
  * uppsägningstid kan förlängas — hyresgästens egen kan aldrig förlängas till
  * dennes nackdel, och ett sådant villkor lämnas därför utan avseende.
  */
+/** Grundvärdet uttryckt i månader, så att veckor och dagar går att jämföra. */
+function noticeInMonths(n: NoticePeriod): number {
+  if (n.months !== undefined) return n.months;
+  if (n.weeks !== undefined) return n.weeks / 4.345;
+  if (n.days !== undefined) return n.days / 30.44;
+  return 0;
+}
+
 function applyExtendedNotice(landlord: NoticePeriod, extended: number | null): NoticePeriod {
-  if (!extended || !landlord.months || extended <= landlord.months) return landlord;
-  return { ...landlord, months: extended, legalBasis: landlord.legalBasis + ", avtalad förlängning" };
+  if (!extended || landlord.unavailable) return landlord;
+  // F18: tidigare krävdes att grundvärdet var uttryckt i månader, vilket tyst
+  // kastade en avtalad förlängning när lagens minimum var veckor eller dagar.
+  if (extended <= noticeInMonths(landlord)) return landlord;
+  return {
+    months: extended,
+    toMonthEnd: landlord.toMonthEnd,
+    legalBasis: landlord.legalBasis + ", avtalad förlängning",
+  };
 }
 
 export function resolveNoticePeriods(
@@ -251,7 +295,7 @@ export function resolveNoticePeriods(
       };
     }
     return {
-      landlord: applyExtendedNotice(PRIVATE_LANDLORD, a.noticeExtendedTenant),
+      landlord: applyExtendedNotice(PRIVATE_LANDLORD, a.noticeExtendedLandlord),
       tenant: PRIVATE_TENANT,
       tenantStatutoryThreeMonths: true,
     };
@@ -260,7 +304,7 @@ export function resolveNoticePeriods(
   if (a.contractType === "fixed") {
     const notice = jbFixedTermNotice(start, end);
     return {
-      landlord: applyExtendedNotice(notice, a.noticeExtendedTenant),
+      landlord: applyExtendedNotice(notice, a.noticeExtendedLandlord),
       tenant: notice,
       // 12 kap. 5 § JB: hyresgästen får alltid säga upp ett bostadshyresavtal
       // till månadsskifte tidigast tre månader bort, även vid bestämd tid.
@@ -269,7 +313,7 @@ export function resolveNoticePeriods(
   }
 
   return {
-    landlord: applyExtendedNotice(JB_INDEFINITE, a.noticeExtendedTenant),
+    landlord: applyExtendedNotice(JB_INDEFINITE, a.noticeExtendedLandlord),
     tenant: JB_INDEFINITE,
     tenantStatutoryThreeMonths: true,
   };
@@ -282,9 +326,24 @@ function isSublet(a: AnswerSet): boolean {
 }
 
 /** 12 kap. 45 § första stycket 2 JB — möblerat rum eller bostad för fritidsändamål. */
+/**
+ * 12 kap. 45 § första stycket 2: "ett möblerat rum eller en lägenhet för
+ * fritidsändamål".
+ *
+ * Fritidsledet knyter an till ÄNDAMÅLET, inte till bostadstypen. Ett fritidshus
+ * som hyrs ut för permanentboende är inte en lägenhet för fritidsändamål, och
+ * hyresgästen har då fullt besittningsskydd enligt 46 §.
+ *
+ * Rumsledet ("ett möblerat rum") tillämpas INTE. Koden likställde tidigare varje
+ * möblerad enrumslägenhet med ett möblerat rum, vilket saknar stöd i ordalydelsen
+ * — lagtexten skiljer på "ett möblerat rum" och "en lägenhet" — och slog mot
+ * hyresgästen. Ett möblerat rum som inte ingår i hyresvärdens egen bostad (det
+ * fallet täcks av punkt 3) går inte att uttrycka i formulärets bostadstyper, så
+ * grunden kan inte avgöras av motorn. Den är hänskjuten till jurist, och tills
+ * dess tolkas frågan till hyresgästens fördel: inget nedsatt besittningsskydd.
+ */
 function isFurnishedRoomOrLeisure(a: AnswerSet): boolean {
-  if (a.propertyType === "holiday_home" || a.purpose === "leisure") return true;
-  return a.furnished !== "none" && a.furnished !== "" && a.rooms === 1;
+  return a.purpose === "leisure";
 }
 
 export function resolveSecurityOfTenure(
@@ -355,8 +414,8 @@ function resolveRentRule(a: AnswerSet, regime: LegalRegime): RentRule {
     return {
       clauseId: "C-RENT-JB",
       principle:
-        "Hyran bestäms enligt bruksvärdesprincipen. Vid andrahandsupplåtelse av en hyresrätt utgör förstahandshyran taket, med tillägg om högst omkring 15 procent om lägenheten hyrs ut möblerad samt med faktisk ersättning för el, bredband och liknande kostnader.",
-      legalBasis: "12 kap. 55 § jordabalken",
+        "Hyran bestäms enligt bruksvärdesprincipen. Vid andrahandsupplåtelse av en hyresrätt utgör förstahandshyran taket. Ett tillägg för möbler och annan utrustning får inte överstiga 15 procent av den hyra hyresvärden själv betalar. Tillägg för andra nyttigheter får inte överstiga hyresvärdens kostnader för dem.",
+      legalBasis: "12 kap. 55 § fjärde stycket jordabalken",
     };
   }
   return {
@@ -413,12 +472,13 @@ function resolveWarnings(
       id: "W-RENT-CRIMINAL",
       level: "high",
       text:
-        "Att ta ut oskäligt hög hyra vid andrahandsuthyrning av en hyresrätt kan vara straffbart. Utgå från förstahandshyran, lägg till högst omkring 15 procent för möblering och ta i övrigt bara ut faktiska kostnader.",
+        "Vid andrahandsuthyrning av en hyresrätt får tillägget för möbler och utrustning inte överstiga 15 procent av den hyra du själv betalar, och övriga tillägg inte överstiga dina faktiska kostnader. Tar du ut mer utan behövligt samtycke från din hyresvärd eller tillstånd av hyresnämnden är det straffbart enligt 12 kap. 65 c § jordabalken. Har du samtycke är oskälig hyra i stället en grund för förverkande och kan medföra återbetalningsskyldighet.",
       step: 5,
     });
   }
 
-  const rent = (a.baseRent ?? 0) + (a.furnishingSurcharge ?? 0) + (a.hasParking ? a.parkingFee ?? 0 : 0);
+  // F19: tröskeln ska räknas på samma belopp som avtalet anger som hyra.
+  const rent = totalRent(a);
   if (a.depositAmount && rent > 0 && a.depositAmount > rent * 3) {
     w.push({
       id: "W-DEPOSIT-HIGH",
@@ -432,7 +492,12 @@ function resolveWarnings(
     w.push({
       id: "W-PREPAID",
       level: "medium",
-      text: "Förskottshyra utöver en månad kan strida mot 12 kap. 20 § jordabalken.",
+      // 12 kap. jordabalken gäller inte under privatuthyrningslagen (12 kap. 1 c §).
+      // Motsvarigheten är 2 kap. 2 § jämförd med den tvingande 1 kap. 4 §.
+      text:
+        regime === "PRIVATE_2026_772"
+          ? "Hyran ska betalas i förskott före varje kalendermånads början. Förskottshyra utöver det är till hyresgästens nackdel jämfört med 2 kap. 2 § privatuthyrningslagen och är enligt 1 kap. 4 § utan verkan mot hyresgästen."
+          : "Förskottshyra utöver en månad kan strida mot 12 kap. 20 § jordabalken.",
       step: 7,
     });
   }
@@ -499,6 +564,7 @@ export function resolveLegalContext(a: AnswerSet): LegalContext {
     regime,
     ...REGIME_META[regime],
     regimeExplanation: decision.reason,
+    regimePending: decision.pending,
     noticePeriods,
     securityOfTenure,
     rentRule: resolveRentRule(a, regime),

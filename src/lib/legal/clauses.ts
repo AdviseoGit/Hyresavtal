@@ -354,6 +354,7 @@ export const CLAUSES: ClauseDef[] = [
     review: MASKINELL_GRANSKNING,
     body:
       "På detta avtal tillämpas {{regimeName}}. {{regimeExplanation}}\n" +
+      "Lagvalet utgår från förhållandena när avtalet ingicks. Ändras de under hyrestiden — till exempel genom att hyresvärden börjar hyra ut fler bostäder — kan en annan lag komma att gälla för avtalet.\n" +
       "Avtalsvillkor som är mindre förmånliga för hyresgästen än vad som följer av tvingande bestämmelser i tillämplig lag är utan verkan.",
   },
   {

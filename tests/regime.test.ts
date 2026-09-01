@@ -13,7 +13,10 @@ import {
   monthsBetween,
   resolveLegalContext,
   resolveLegalRegime,
+  resolveRegimeDecision,
+  describeNotice,
 } from "../src/lib/legal/regime";
+import { createEmptyAnswerSet } from "../src/lib/types";
 import { T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, base } from "./fixtures";
 
 test("T1 bostadsrätt, privatperson, permanent -> privatuthyrningslagen, 3/3 månader", () => {
@@ -178,25 +181,25 @@ test("hyresgästens tremånadersrätt gäller numera i båda regimerna", () => {
 });
 
 test("avtalad förlängning höjer hyresvärdens uppsägningstid men aldrig hyresgästens", () => {
-  const ctx = resolveLegalContext(base({ noticeExtendedTenant: 6 }));
+  const ctx = resolveLegalContext(base({ noticeExtendedLandlord: 6 }));
   assert.equal(ctx.noticePeriods.landlord.months, 6);
   assert.equal(ctx.noticePeriods.tenant.months, 3);
 });
 
 test("kortare avtalad tid än lagens minimum lämnas utan avseende", () => {
-  const ctx = resolveLegalContext(base({ noticeExtendedTenant: 1 }));
+  const ctx = resolveLegalContext(base({ noticeExtendedLandlord: 1 }));
   assert.equal(ctx.noticePeriods.landlord.months, 3);
 });
 
-test("möblerat rum utanför egen bostad ger besittningsskydd efter 9 månader", () => {
+test("F11 — möblerad etta likställs inte med möblerat rum", () => {
+  // 12 kap. 45 § 1 st 2 skiljer på "ett möblerat rum" och "en lägenhet".
+  // Koden likställde tidigare varje möblerad enrumslägenhet med ett möblerat rum
+  // och förnekade besittningsskyddet i nio månader utan stöd i ordalydelsen.
   const ctx = resolveLegalContext(
     base({ landlordRentsMoreThanTwo: true, rooms: 1, furnished: "full" })
   );
   assert.equal(ctx.regime, "JB12");
-  assert.equal(
-    ctx.securityOfTenure.status === "arises_after" ? ctx.securityOfTenure.months : null,
-    9
-  );
+  assert.equal(ctx.securityOfTenure.status, "full");
 });
 
 test("fritidsbostad under JB12 ger besittningsskydd efter 9 månader", () => {
@@ -231,4 +234,99 @@ test("datumhjälpare räknar kalendermånader och klämmer månadsslut", () => {
   assert.equal(daysBetween(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2030, 0, 15))), 14);
   assert.equal(exceedsMonths(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2030, 9, 1)), 9), false);
   assert.equal(exceedsMonths(new Date(Date.UTC(2030, 0, 1)), new Date(Date.UTC(2030, 9, 2)), 9), true);
+});
+
+/* -------------------------------------------------------------------------
+   F22: luckorna som gjorde att fynden i granskningsrapporten kunde uppstå
+   utan att något test gick sönder.
+   ------------------------------------------------------------------------- */
+
+test("F22:1 — tomt formulär påstår inte att någon lag gäller", () => {
+  // 1 kap. 1 § är ett positivt tillämpningsvillkor, inte en presumtion.
+  const d = resolveRegimeDecision(createEmptyAnswerSet());
+  assert.equal(d.pending, true);
+  assert.ok(!/Privatuthyrningslagen gäller/.test(d.reason));
+  assert.match(d.reason, /ännu inte avgjort/);
+});
+
+test("F22:1b — besvarade grundfrågor ger ett avgjort lagval", () => {
+  assert.equal(resolveRegimeDecision(T1).pending, false);
+  assert.equal(resolveRegimeDecision(T3).pending, false);
+});
+
+test("F22:2 — beslutstabellens ordning vid äkta krock mellan flera undantag", () => {
+  // Hyresrätt (1 kap. 3 § 1 st 2) och fritidsändamål (p. 3) samtidigt.
+  // Båda ger JB12, men vilken regel som rapporteras skrivs in i avtalet.
+  const d = resolveRegimeDecision(
+    base({ landlordTitle: "first_hand_lease", purpose: "leisure" })
+  );
+  assert.equal(d.regime, "JB12");
+  assert.equal(d.rule, 2, "hyresrättsledet ska rapporteras före fritidsledet");
+  assert.match(d.reason, /hyresrätt/);
+});
+
+test("F22:4 — fritidshus som hyrs ut för permanentboende ger fullt besittningsskydd", () => {
+  // 12 kap. 45 § 1 st 2 kräver att lägenheten upplåts FÖR fritidsändamål.
+  // Tidigare räckte bostadstypen, vilket förnekade skyddet i nio månader.
+  const ctx = resolveLegalContext(
+    base({ propertyType: "holiday_home", purpose: "permanent", landlordTitle: "first_hand_lease" })
+  );
+  assert.equal(ctx.regime, "JB12");
+  assert.notEqual(ctx.securityOfTenure.status, "none");
+});
+
+test("F22:6 — avtalad förlängning gäller även när lagens minimum är veckor", () => {
+  // 12 kap. 4 § 2 st: "och är inte längre uppsägningstid avtalad".
+  const ctx = resolveLegalContext(
+    base({
+      landlordTitle: "first_hand_lease",
+      contractType: "fixed",
+      startDate: "2030-01-01",
+      endDate: "2030-04-01",
+      noticeExtendedLandlord: 6,
+    })
+  );
+  assert.equal(ctx.noticePeriods.landlord.months, 6, "förlängningen får inte kastas");
+  assert.match(ctx.noticePeriods.landlord.legalBasis, /avtalad förlängning/);
+});
+
+test("F22:7 — hyresregeln under privatuthyrningslagen citerar 2 kap., inte hyreslagen", () => {
+  const r = resolveLegalContext(T1).rentRule;
+  assert.equal(r.clauseId, "C-RENT-PRIVATE");
+  assert.match(r.legalBasis, /privatuthyrningslagen/);
+  assert.ok(!/12 kap\./.test(r.legalBasis));
+  assert.match(r.principle, /bestämd till beloppet/);
+});
+
+test("F22:8 — förskottsvarningen citerar rätt lag för rätt regim", () => {
+  const priv = resolveLegalContext(base({ prepaidRentMonths: 3 }));
+  const wp = priv.warnings.find((w) => w.id === "W-PREPAID");
+  assert.ok(wp);
+  assert.match(wp.text, /2 kap\. 2 § privatuthyrningslagen/);
+  assert.ok(!/12 kap\. 20 §/.test(wp.text), "hyreslagen gäller inte här");
+
+  const jb = resolveLegalContext(
+    base({ landlordTitle: "first_hand_lease", prepaidRentMonths: 3 })
+  );
+  const wj = jb.warnings.find((w) => w.id === "W-PREPAID");
+  assert.ok(wj);
+  assert.match(wj.text, /12 kap\. 20 §/);
+});
+
+test("F22:9 — describeNotice ger en läsbar mening när uppsägningsrätt saknas", () => {
+  const ctx = resolveLegalContext(
+    base({ contractType: "fixed", startDate: "2030-01-01", endDate: "2031-01-01" })
+  );
+  const text = describeNotice(ctx.noticePeriods.landlord);
+  assert.ok(!/undefined/.test(text));
+  assert.match(text, /^Avtalet upphör vid hyrestidens slut/);
+});
+
+test("F14 — straffvarningen anger båda rekvisiten i 12 kap. 65 c §", () => {
+  const ctx = resolveLegalContext(base({ landlordTitle: "first_hand_lease" }));
+  const w = ctx.warnings.find((x) => x.id === "W-RENT-CRIMINAL");
+  assert.ok(w);
+  assert.match(w.text, /utan behövligt samtycke/);
+  assert.match(w.text, /15 procent/);
+  assert.ok(!/omkring 15/.test(w.text), "taket är exakt, inte ungefärligt");
 });

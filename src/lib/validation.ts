@@ -238,6 +238,12 @@ export function validateStep(step: StepId, a: AnswerSet): Errors {
 
     case "rent":
       put(e, "baseRent", validateAmount(a.baseRent, "Grundhyran"));
+      // 1 kap. 1 § privatuthyrningslagen och 12 kap. 1 § jordabalken kräver båda att
+      // upplåtelsen sker mot ersättning. Utan hyra är det ett lån av bostad, och
+      // ingen av regimerna är tillämplig — men validateAmount godtar 0.
+      if (a.baseRent === 0) {
+        put(e, "baseRent", "Hyran måste vara högre än noll. Utan ersättning är det inte ett hyresavtal.");
+      }
       if (a.furnished !== "none" && a.furnishingSurcharge !== null) {
         put(e, "furnishingSurcharge", validateAmount(a.furnishingSurcharge, "Möbleringstillägget"));
       }
@@ -281,8 +287,8 @@ export function validateStep(step: StepId, a: AnswerSet): Errors {
         }
         put(e, "fixedTermRenewal", req(a.fixedTermRenewal, "Välj vad som händer när hyrestiden löper ut."));
       }
-      if (a.noticeExtendedTenant !== null && a.noticeExtendedTenant < 0) {
-        put(e, "noticeExtendedTenant", "Ange ett positivt antal månader.");
+      if (a.noticeExtendedLandlord !== null && a.noticeExtendedLandlord < 0) {
+        put(e, "noticeExtendedLandlord", "Ange ett positivt antal månader.");
       }
       break;
 

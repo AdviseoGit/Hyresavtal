@@ -71,7 +71,7 @@ export function RegimeBox({ ctx }: { ctx: LegalContext }) {
     <div className="rounded-lg border-2 border-brand bg-brand/5 px-4 py-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-brand">Tillämplig lag</p>
       <p className="mt-1 text-base font-semibold text-gray-900">
-        Ditt avtal följer {ctx.regimeName}
+        {ctx.regimePending ? "Inte avgjort ännu" : `Ditt avtal följer ${ctx.regimeName}`}
       </p>
       <p className="mt-1 text-sm text-gray-700">{ctx.regimeExplanation}</p>
       <dl className="mt-3 grid sm:grid-cols-2 gap-3 text-sm">

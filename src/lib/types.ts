@@ -187,7 +187,7 @@ export interface AnswerSet {
   startDate: string;
   endDate: string;
   fixedTermRenewal: FixedTermRenewal | "";
-  noticeExtendedTenant: number | null;
+  noticeExtendedLandlord: number | null;
 
   /* 5.7 Deposition och säkerhet */
   depositAmount: number | null;
@@ -303,7 +303,7 @@ export function createEmptyAnswerSet(): AnswerSet {
     startDate: "",
     endDate: "",
     fixedTermRenewal: "",
-    noticeExtendedTenant: null,
+    noticeExtendedLandlord: null,
 
     depositAmount: null,
     depositReturnDays: 30,

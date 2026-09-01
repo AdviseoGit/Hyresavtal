@@ -64,7 +64,7 @@ export default function TermStep({ ctl, a, ctx }: StepProps) {
 
       <NumberField
         ctl={ctl}
-        name="noticeExtendedTenant"
+        name="noticeExtendedLandlord"
         label="Längre uppsägningstid för hyresvärden (frivilligt)"
         suffix="månader"
         min={0}
