@@ -4,9 +4,9 @@ import { SITE, siteValue } from "../../data/site";
 import { DRAFT_TTL_DAYS } from "../../lib/draft";
 
 export const metadata = {
-  title: "Integritetspolicy – Hyresavtal.nu",
+  title: "Integritetspolicy – Hyresavtal.io",
   description:
-    "Så behandlas personuppgifter i Hyresavtal.nu: inga uppgifter lagras på server, utkast sparas lokalt i din webbläsare.",
+    "Så behandlas personuppgifter i Hyresavtal.io: inga uppgifter lagras på server, utkast sparas lokalt i din webbläsare.",
 };
 
 function H({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ export default function Integritetspolicy() {
       <header className="bg-white border-b">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold text-brand">
-            Hyresavtal.nu
+            Hyresavtal.io
           </Link>
           <Link href="/" className="text-sm text-brand hover:underline">
             ← Tillbaka

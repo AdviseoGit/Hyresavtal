@@ -65,7 +65,7 @@ export async function renderAgreement(a: AnswerSet, ctx: LegalContext): Promise<
 
   pdf.gap(16);
   pdf.note(
-    "Dokumentet är skapat med Hyresavtal.nu utifrån de uppgifter parterna lämnat. Kontrollera innehållet innan avtalet undertecknas."
+    "Dokumentet är skapat med Hyresavtal.io utifrån de uppgifter parterna lämnat. Kontrollera innehållet innan avtalet undertecknas."
   );
 
   pdf.finalize(DOC_NAME, true);

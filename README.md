@@ -1,4 +1,4 @@
-# Hyresavtal.nu
+# Hyresavtal.io
 
 Next.js-app som skapar ett **utkast till hyresavtal** för bostad från ett guidat
 formulär i tio steg. Tjänsten avgör först vilken lag som gäller för uthyrningen och

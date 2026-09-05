@@ -14,8 +14,15 @@
  * som ska stå eftersom §11 pekar ut personuppgiftsansvarig.
  */
 
+/**
+ * Tjänstens publika adress. Används för canonical-URL, og:-taggar, robots och
+ * sitemap. Sätt NEXT_PUBLIC_SITE_URL i en förhandsvisningsmiljö så att den inte
+ * pekar sökmotorer mot produktionsdomänen.
+ */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://hyresavtal.io";
+
 export const SITE = {
-  name: "Hyresavtal.nu",
+  name: "Hyresavtal.io",
   operator: process.env.NEXT_PUBLIC_SITE_OPERATOR || "Adivseo AB",
   orgNumber: process.env.NEXT_PUBLIC_SITE_ORG_NUMBER || "559312-5437",
   contactEmail: process.env.NEXT_PUBLIC_SITE_CONTACT_EMAIL || "simon@adviseo.se",

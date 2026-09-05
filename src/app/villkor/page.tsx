@@ -3,9 +3,9 @@ import Link from "next/link";
 import { SITE, siteValue } from "../../data/site";
 
 export const metadata = {
-  title: "Användarvillkor & Ansvarsfriskrivning – Hyresavtal.nu",
+  title: "Användarvillkor & Ansvarsfriskrivning – Hyresavtal.io",
   description:
-    "Användarvillkor och ansvarsfriskrivning för Hyresavtal.nu. Tjänsten genererar utkast till hyresavtal grundade i Hyreslagen och utgör inte juridisk rådgivning.",
+    "Användarvillkor och ansvarsfriskrivning för Hyresavtal.io. Tjänsten genererar utkast till hyresavtal grundade i Hyreslagen och utgör inte juridisk rådgivning.",
 };
 
 function H({ children }: { children: React.ReactNode }) {
@@ -17,7 +17,7 @@ export default function Villkor() {
     <main className="min-h-screen">
       <header className="bg-white border-b">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
-          <Link href="/" className="text-lg font-bold text-brand">Hyresavtal.nu</Link>
+          <Link href="/" className="text-lg font-bold text-brand">Hyresavtal.io</Link>
           <Link href="/" className="text-sm text-brand hover:underline">← Tillbaka</Link>
         </div>
       </header>
@@ -27,7 +27,7 @@ export default function Villkor() {
         <p className="text-sm text-gray-500 mt-1">Senast uppdaterad: 2026-06-13</p>
 
         <p className="mt-6">
-          Läs dessa villkor noggrant innan du använder Hyresavtal.nu (&quot;Tjänsten&quot;).
+          Läs dessa villkor noggrant innan du använder Hyresavtal.io (&quot;Tjänsten&quot;).
           Genom att skapa ett dokument med Tjänsten godkänner du villkoren i sin helhet.
         </p>
 

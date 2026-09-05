@@ -14,7 +14,7 @@ export default function Home() {
     <main className="min-h-screen">
       <header className="bg-white border-b">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
-          <span className="text-lg font-bold text-brand">Hyresavtal.nu</span>
+          <span className="text-lg font-bold text-brand">Hyresavtal.io</span>
           <span className="text-sm text-gray-500">Rätt lag för din uthyrning</span>
         </div>
       </header>
