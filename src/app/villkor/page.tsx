@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SITE, siteValue } from "../../data/site";
 
 export const metadata = {
+  alternates: { canonical: "/villkor" },
   title: "Användarvillkor & Ansvarsfriskrivning – Hyresavtal.io",
   description:
     "Användarvillkor och ansvarsfriskrivning för Hyresavtal.io. Tjänsten genererar utkast till hyresavtal grundade i Hyreslagen och utgör inte juridisk rådgivning.",

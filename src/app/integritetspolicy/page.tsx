@@ -4,6 +4,7 @@ import { SITE, siteValue } from "../../data/site";
 import { DRAFT_TTL_DAYS } from "../../lib/draft";
 
 export const metadata = {
+  alternates: { canonical: "/integritetspolicy" },
   title: "Integritetspolicy – Hyresavtal.io",
   description:
     "Så behandlas personuppgifter i Hyresavtal.io: inga uppgifter lagras på server, utkast sparas lokalt i din webbläsare.",

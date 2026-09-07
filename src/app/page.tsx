@@ -9,6 +9,12 @@ import {
   PAUSE_HEADING,
 } from "../lib/service-status";
 
+// Egen canonical per sida. Rotlayouten satte tidigare canonical "/" för
+// HELA trädet, så varje undersida pekade bort sig själv till startsidan.
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default function Home() {
   return (
     <main className="min-h-screen">
