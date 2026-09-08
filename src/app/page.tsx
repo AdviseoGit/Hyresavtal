@@ -41,6 +41,11 @@ export default function Home() {
               <span className="bg-white border rounded-full px-3 py-1">✓ Rätt uppsägningstid automatiskt</span>
               <span className="bg-white border rounded-full px-3 py-1">✓ Besiktning, inventarier och nycklar som bilagor</span>
             </div>
+            <div className="mt-6 text-sm text-gray-500">
+              <Link href="/privatuthyrningslagen" className="underline hover:text-brand">
+                Läs mer om privatuthyrningslagen och varför den är viktig
+              </Link>
+            </div>
           </>
         )}
       </section>
