@@ -1,3 +1,4 @@
+2026-09-08 | BANA A | Ny guidesida om privatuthyrningslagen | privatuthyrningslagen: >10 | nästa: Bygg guidesida för "hyra ut egen bostad regler"
 # PROGRESS_LOG — hyresavtal.io
 
 Format: <datum> | <BANA A-F> | <passets drag> | <sökord + position nu> | nästa: <steg>

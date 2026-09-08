@@ -12,7 +12,7 @@ Löptid: pass 1 av 6
 Kill-kriterium: har inget av sökorden nått topp-20 efter 6 pass är antagandet om
 vinnbarhet fel — byt intention och angrip andrahandsklustret i stället.
 Steg:
-- [ ] Pass 1: välj de 5-8 sökorden ur SÖKORDSKARTAN, mät utgångsposition för var
+- [x] Pass 1: välj de 5-8 sökorden ur SÖKORDSKARTAN, mät utgångsposition för var
       och en och skriv dem till SCOREBOARD.md. Bygg sedan den första guidesidan
       för det sökord där avståndet till topp-10 är kortast.
 - [ ] Pass 2-5: en guidesida per pass, var och en internlänkad mot de tidigare.
