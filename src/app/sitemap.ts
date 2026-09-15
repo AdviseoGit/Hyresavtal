@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: SITE_URL, lastModified, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/privatuthyrningslagen`, lastModified, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${SITE_URL}/hyra-ut-egen-bostad-regler`, lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/villkor`, lastModified, changeFrequency: "yearly", priority: 0.3 },
     { url: `${SITE_URL}/integritetspolicy`, lastModified, changeFrequency: "yearly", priority: 0.3 },
   ];

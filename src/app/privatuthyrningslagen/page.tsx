@@ -32,7 +32,7 @@ export default function PrivatuthyrningslagenPage() {
         
         <p className="lead text-lg text-gray-600 mb-8">
           Ska du hyra ut din egen bostad? Då är det högst troligt att privatuthyrningslagen gäller i stället 
-          för hyreslagen. Detta är avgörande eftersom privatuthyrningslagen ger dig som uthyrare ett betydligt 
+          för hyreslagen. Det finns viktiga skillnader i <Link href="/hyra-ut-egen-bostad-regler" className="text-brand hover:underline">regler för att hyra ut egen bostad</Link> beroende på vilken lag som styr ditt hyresavtal. Detta är avgörande eftersom privatuthyrningslagen ger dig som uthyrare ett betydligt 
           starkare skydd när det gäller uppsägning, hyressättning och besittningsskydd.
         </p>
 
