@@ -8,7 +8,7 @@ tre av dem inom 6 pass. Grunden: domänen är dagar gammal och saknar
 Hyresgästföreningen och är inte vinnbara ännu, medan lagfrågornas long tail har
 svagare och mer spretig konkurrens.
 Målsiffra: antal målsökord i topp-10 (mätt med serp_search.py, gl=se): 0 -> 3
-Löptid: pass 1 av 6
+Löptid: pass 2 av 6
 Kill-kriterium: har inget av sökorden nått topp-20 efter 6 pass är antagandet om
 vinnbarhet fel — byt intention och angrip andrahandsklustret i stället.
 Steg:
