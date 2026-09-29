@@ -15,7 +15,8 @@ Steg:
 - [x] Pass 1: välj de 5-8 sökorden ur SÖKORDSKARTAN, mät utgångsposition för var
       och en och skriv dem till SCOREBOARD.md. Bygg sedan den första guidesidan
       för det sökord där avståndet till topp-10 är kortast.
-- [ ] Pass 2-5: en guidesida per pass, var och en internlänkad mot de tidigare.
+- [x] Pass 2: Byggde guidesidan för uppsägningstid andrahandsuthyrning och länkade in den, samt rättade lagfakta (3 månader hyresgästuppsägningstid privatuthyrningslagen) på existerande sidor.
+- [ ] Pass 3-5: en guidesida per pass, var och en internlänkad mot de tidigare.
 - [ ] Pass 6: navsida som binder ihop klustret, och mät om målsiffran nåddes.
 
 ## AVSLUTADE

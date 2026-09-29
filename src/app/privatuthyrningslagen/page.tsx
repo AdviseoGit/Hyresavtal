@@ -69,9 +69,10 @@ export default function PrivatuthyrningslagenPage() {
 
         <h3 className="text-xl font-medium mt-6 mb-3">För hyresgästen</h3>
         <p>
-          För hyresgästen är uppsägningstiden alltid en månad, räknat från nästkommande månadsskifte (6 kap. 2 §). 
-          Oavsett vad som står i ert hyresavtal kan hyresgästen alltid säga upp avtalet med en månads varsel, 
-          även om ni har avtalat om en bestämd tid. 
+          För hyresgästen är uppsägningstiden tre månader, räknat från nästkommande månadsskifte (6 kap. 2 §). 
+          Oavsett vad som står i ert hyresavtal kan hyresgästen alltid säga upp avtalet med tre månaders varsel, 
+          även om ni har avtalat om en bestämd tid. Tidigare (i den gamla lagen från 2012) var hyresgästens 
+          uppsägningstid endast en månad, men detta ändrades i samband med 2026 års nya lag.
         </p>
 
         <h2 className="text-2xl font-semibold mt-10 mb-4">Besittningsskydd – Får hyresgästen bo kvar?</h2>

@@ -82,7 +82,7 @@ export default function HyraUtEgenBostadReglerPage() {
         <ul className="list-disc pl-6 mb-6">
           <li>Hyresgästen får <strong>aldrig besittningsskydd</strong> (12 kap. 1 c § JB och avsaknaden i 2026:772). Du kan säga upp avtalet för att du själv vill ha tillbaka bostaden.</li>
           <li>Uppsägningstiden för dig som uthyrare är tre månader (enligt 6 kap. 2 § privatuthyrningslagen).</li>
-          <li>Hyresgästens uppsägningstid är endast en månad.</li>
+          <li>Hyresgästens uppsägningstid är tre månader (enligt samma lagrum, 6 kap. 2 §), inte en månad.</li>
         </ul>
         <p>
           Om du hyr ut en hyresrätt och <strong>hyreslagen</strong> gäller:

@@ -28,6 +28,18 @@ export default function SiteFooter() {
           ·{" "}
           <Link href="/integritetspolicy" className="underline">
             Integritetspolicy
+          </Link>{" "}
+          ·{" "}
+          <Link href="/hyra-ut-egen-bostad-regler" className="underline">
+            Regler hyra ut
+          </Link>{" "}
+          ·{" "}
+          <Link href="/privatuthyrningslagen" className="underline">
+            Privatuthyrningslagen
+          </Link>{" "}
+          ·{" "}
+          <Link href="/uppsagningstid-andrahandsuthyrning" className="underline">
+            Uppsägningstid
           </Link>
         </p>
       </div>
