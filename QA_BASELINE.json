@@ -1,8 +1,4 @@
 {
-  "https://hyresavtal.io/villkor": [
-    "no <footer>"
-  ],
-  "https://hyresavtal.io/integritetspolicy": [
-    "no <footer>"
-  ]
+  "hard_findings": [],
+  "count": 0
 }
