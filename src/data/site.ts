@@ -25,7 +25,7 @@ export const SITE = {
   name: "Hyresavtal.io",
   operator: process.env.NEXT_PUBLIC_SITE_OPERATOR || "Adivseo AB",
   orgNumber: process.env.NEXT_PUBLIC_SITE_ORG_NUMBER || "559312-5437",
-  contactEmail: process.env.NEXT_PUBLIC_SITE_CONTACT_EMAIL || "simon@adviseo.se",
+  contactEmail: process.env.NEXT_PUBLIC_SITE_CONTACT_EMAIL || "info@hyresavtal.io",
   address: process.env.NEXT_PUBLIC_SITE_ADDRESS || "Gustavsgatan 23, 431 66 Mölndal",
 };
 
